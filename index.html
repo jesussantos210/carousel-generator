@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Carruseles MVP</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="controls">
+            <h2> Crea tu contenido</h2>
+            
+            <div class="input-group">
+                <label>Tu Texto Principal</label>
+                <textarea id="textInput" placeholder="Escribe aquí tu frase genial..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Elige la fuente</label>
+                <select id="fontSelect">
+                    <option value="font-inter">Moderna</option>
+                    <option value="font-playfair">Elegante</option>
+                    <option value="font-roboto">Tech</option>
+                    <option value="font-montserrat">Bold</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre de Usuario / Marca</label>
+                <input type="text" id="authorInput" placeholder="@miusuario">
+            </div>
+
+            <div class="input-group">
+                <label>Sube tu logo (Opcional)</label>
+                <input type="file" id="logoInput" accept="immage/png, image/jpeg, image/svg+xml">
+                <small style="color: #666; font-size: 0.8rem">Recomendado: PNG transparente</small>
+            </div>
+
+            <div class="input-group">
+                <label>Elige un tema</label>
+                <div class="theme-buttons">
+                    <button class="theme-btn" data-theme="theme-classic" style="background: #4A90E2;"></button>
+                    <button class="theme-btn" data-theme="theme-dark" style="background: #111827;"></button>
+                    <button class="theme-btn" data-theme="theme-sunset" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"></button>
+                    <button class="theme-btn" data-theme="theme-elegant" style="background: #ffffff;"></button>
+                </div>
+            </div>
+
+            <button id="downloadBtn" class="btn-primary">Descargar Imagen</button>
+        </aside>
+
+        <main class="preview-area">
+            <div id="previewContainer" class="slides-wrapper">  
+            </div>
+        </main> 
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

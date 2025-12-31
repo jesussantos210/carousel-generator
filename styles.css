@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto+Mono:wght@500&display=swap');
+
+:root {
+    --primary: #2563eb;
+    --dark: #1e293b;
+    --light: #f8fafc;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background-color: var(--light);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100%;
+}
+
+/* --- Panel Izquierdo --- */
+.controls {
+    width: 350px;
+    background: white;
+    padding: 2rem;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: none;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: auto;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+/* --- Panel Derecho --- */
+.preview-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e2e8f0;
+    overflow: hidden;
+    min-width: 0;
+}
+
+
+/* --- Diapositiva --- */
+.slides-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scroll-behavior: smooth;
+}
+
+.carousel-slide {
+    width: 400px;
+    height: 400px;
+    background-color: #4A90E2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+    border-radius: 8px;   
+    position: relative;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slide-content p {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.slide-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    opacity: 0.8;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 15px;
+}
+
+.watermark {
+    font-weight: bold;
+}
+
+/* --- ESTILOS DE LOS TEMAS --- */
+
+/* 1. Clásico (El que tenías) */
+.theme-classic {
+    background-color: #4A90E2;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* 2. Dark Mode (Estilo Programador/Tech) */
+.theme-dark {
+    background-color: #111827;
+    color: #00ff9d; /* Verde neón */
+    font-family: 'Courier New', Courier, monospace;
+    border: 2px solid #374151;
+}
+
+/* 3. Sunset (Degradado para influencers) */
+.theme-sunset {
+    background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+    color: #592E6F;
+    font-family: 'Georgia', serif;
+}
+
+/* 4. Elegant (Blanco y Negro minimalista) */
+.theme-elegant {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Times New Roman', serif;
+    border: 4px solid #000000;
+}
+
+/* --- BOTONES DEL SELECTOR --- */
+.theme-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.theme-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.theme-btn:hover {
+    transform: scale(1.1);
+    border-color: #999;
+}
+
+/* --- ESTILOS DEL LOGO --- */
+
+/* Esta clase se aplicará a la imagen dentro de la slide */
+.slide-logo {
+    max-height: 70px; /* Altura máxima para que no sea invasivo */
+    width: auto;      /* Mantiene la proporción */
+    margin-bottom: 25px; /* Espacio entre el logo y el texto */
+    display: block;   /* Asegura que se centre si el contenedor está centrado */
+}
+
+/* --- ESTILOS DE FUENTES (Pega esto al final) --- */
+
+.font-inter { font-family: 'Inter', sans-serif !important; }
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+.font-roboto { font-family: 'Roboto Mono', monospace !important; }
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
