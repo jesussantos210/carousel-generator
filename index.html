@@ -50,6 +50,30 @@
             </div>
 
             <button id="downloadBtn" class="btn-primary">Descargar Imagen</button>
+
+            <div class="monetization-area">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                    <line x1="6" y1="1" x2="6" y2="4"></line>
+                    <line x1="10" y1="1" x2="10" y2="4"></line>
+                    <line x1="14" y1="1" x2="14" y2="4"></line>
+                </svg>
+                    <span>Invítame un café</span>
+                </a>
+
+                <div class="premium-box">
+                    <p id="removeWatermarkTrigger" class="premium-link">Eliminar marca de agua</p>
+
+                    <div id="promoCodeArea" class="promo-code-area" style="display: none;">
+                        <input type="text" id="promo Input" placeholder="Ingresa código VIP">
+                        <button id="applyCodeBtn">Aplicar</button>
+                    </div>
+                    <small  id="premiumSuccessMsg" class="success-message">¡Modo PRO Activado!</small>
+                </div>
+
+            </div>
         </aside>
 
         <main class="preview-area">

@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalAuthor = "@miusuario";
     let currentTheme = "theme-classic"; 
     let globalLogoUrl = ""; 
-    
-    // NUEVO: Variable para la fuente (valor por defecto: Inter)
     let currentFont = "font-inter";
+
+    window.isPremium = false;
 
     // ---------------------------------------------------------
     // FUNCIÓN 1: Renderizar las diapositivas
@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
         paragraphs.forEach((paragraph, index) => {
             const slide = document.createElement('div');
             // Aplicamos tema
-            slide.className = `carousel-slide ${currentTheme}`;
+            const premiumClass = windows.ispremium ? 'premium-mode' : '';
+
+            slie.className = `carousel-slide ${currentTheme} ${premiumClass}`;
             
             slide.innerHTML = `
                 <div class="slide-content" style="flex-direction: column;">
@@ -118,6 +120,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
         doc.save('carrusel-aromalab.pdf');
         downloadBtn.innerText = btnOriginalText;
+    });
+
+    // ---------------------------------------------------------
+    // LÓGICA DE MONETIZACIÓN (NUEVO BLOQUE)
+    // ---------------------------------------------------------
+    
+    const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
+    const promoCodeArea = document.getElementById('promoCodeArea');
+    const applyCodeBtn = document.getElementById('applyCodeBtn');
+    const promoInput = document.getElementById('promoInput');
+    const premiumSuccessMsg = document.getElementById('premiumSuccessMsg');
+
+    // 1. Mostrar/Ocultar el input de código
+    removeWatermarkTrigger.addEventListener('click', () => {
+        if (promoCodeArea.style.display === 'none') {
+            promoCodeArea.style.display = 'flex';
+        } else {
+            promoCodeArea.style.display = 'none';
+        }
+    });
+
+    // 2. Validar el código VIP
+    applyCodeBtn.addEventListener('click', () => {
+        const codigoIngresado = promoInput.value.trim().toUpperCase();
+        const CODIGO_SECRETO = "PRO2026"; // ¡Este es el código que venderías!
+
+        if (codigoIngresado === CODIGO_SECRETO) {
+            // ¡MAGIA! Añadimos la clase especial a CADA slide existente
+            document.querySelectorAll('.carousel-slide').forEach(slide => {
+                slide.classList.add('premium-mode');
+            });
+
+            // Y aseguramos que las futuras slides también lo tengan
+            // (Esto requiere un pequeño truco: guardar una variable global)
+            window.isPremium = true; 
+
+            // Feedback visual
+            promoCodeArea.style.display = 'none';
+            removeWatermarkTrigger.style.display = 'none';
+            premiumSuccessMsg.style.display = 'block';
+            
+            alert("¡Código correcto! Marca de agua eliminada.");
+        } else {
+            alert("Código incorrecto. Intenta con PRO2026 (guiño, guiño)");
+        }
     });
 
     // Inicialización

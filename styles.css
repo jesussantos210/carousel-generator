@@ -198,3 +198,75 @@ input[type="text"] {
 .font-playfair { font-family: 'Playfair Display', serif !important; }
 .font-roboto { font-family: 'Roboto Mono', monospace !important; }
 .font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+
+/* --- MONETIZACIÓN --- */
+
+.monetization-area {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    text-align: center;
+}
+
+/* Botón de Café */
+.btn-coffee {
+    display: block;
+    background-color: #FFDD00;
+    color: #000;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+}
+
+.btn-coffee:hover {
+    transform: scale(1.02);
+}
+
+.seccess-message {
+    color: #16a34a;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: none;
+}
+
+/* Enlace Premium */
+.premium-link {
+    color: #666;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 0;
+}
+
+.premium-link:hover {
+    color: #2563eb;
+}
+
+/* Área de Código Promocional */
+.promo-code-area {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.promo-code-area input {
+    font-size: 0.8rem;
+    padding: 5px;
+}
+
+.promo-code-area button {
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.premium-mode .watermark {
+    display: none !important;
+}
