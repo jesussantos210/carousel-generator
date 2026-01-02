@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Carruseles MVP</title>
+    
     <link rel="stylesheet" href="/styles.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
     <div class="app-container">
         <aside class="controls">
-            <h2> Crea tu contenido</h2>
+            <h2>Crea tu contenido</h2>
             
             <div class="input-group">
                 <label>Tu Texto Principal</label>
@@ -34,8 +37,15 @@
             </div>
 
             <div class="input-group">
-                <label>Sube tu logo (Opcional)</label>
-                <input type="file" id="logoInput" accept="immage/png, image/jpeg, image/svg+xml">
+                <label class="label-with-icon">
+                    Sube tu Logo 
+                    <svg class="lock-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </label>
+                
+                <input type="file" id="logoInput" accept="image/png, image/jpeg, image/svg+xml">
                 <small style="color: #666; font-size: 0.8rem">Recomendado: PNG transparente</small>
             </div>
 
@@ -45,7 +55,7 @@
                     <button class="theme-btn" data-theme="theme-classic" style="background: #4A90E2;"></button>
                     <button class="theme-btn" data-theme="theme-dark" style="background: #111827;"></button>
                     <button class="theme-btn" data-theme="theme-sunset" style="background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);"></button>
-                    <button class="theme-btn" data-theme="theme-elegant" style="background: #ffffff;"></button>
+                    <button class="theme-btn" data-theme="theme-elegant" style="background: #ffffff; border: 1px solid #ccc;"></button>
                 </div>
             </div>
 
@@ -53,13 +63,14 @@
 
             <div class="monetization-area">
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                    <line x1="6" y1="1" x2="6" y2="4"></line>
-                    <line x1="10" y1="1" x2="10" y2="4"></line>
-                    <line x1="14" y1="1" x2="14" y2="4"></line>
-                </svg>
+                <a href="https://www.buymeacoffee.com" target="_blank" class="btn-coffee">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <line x1="6" y1="1" x2="6" y2="4"></line>
+                        <line x1="10" y1="1" x2="10" y2="4"></line>
+                        <line x1="14" y1="1" x2="14" y2="4"></line>
+                    </svg>
                     <span>Invítame un café</span>
                 </a>
 
@@ -67,10 +78,10 @@
                     <p id="removeWatermarkTrigger" class="premium-link">Eliminar marca de agua</p>
 
                     <div id="promoCodeArea" class="promo-code-area" style="display: none;">
-                        <input type="text" id="promo Input" placeholder="Ingresa código VIP">
+                        <input type="text" id="promoInput" placeholder="Ingresa código VIP">
                         <button id="applyCodeBtn">Aplicar</button>
                     </div>
-                    <small  id="premiumSuccessMsg" class="success-message">¡Modo PRO Activado!</small>
+                    <small id="premiumSuccessMsg" class="success-message">¡Modo PRO Activado!</small>
                 </div>
 
             </div>
@@ -82,6 +93,6 @@
         </main> 
     </div>
 
-    <script src="script.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>

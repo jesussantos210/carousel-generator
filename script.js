@@ -1,3 +1,6 @@
+// --- CONFIGURACIÓN DEL DUEÑO ---
+const CODIGO_ACTUAL = "ENERO2026"; 
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Referencias DOM
     const textInput = document.getElementById('textInput');
@@ -6,49 +9,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('previewContainer');
     const themeBtns = document.querySelectorAll('.theme-btn');
     const logoInput = document.getElementById('logoInput');
-    
-    // NUEVO: Referencia al selector de fuentes
     const fontSelect = document.getElementById('fontSelect');
 
-    // Variables de estado
+    // Referencias de Monetización
+    const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
+    const promoCodeArea = document.getElementById('promoCodeArea');
+    const applyCodeBtn = document.getElementById('applyCodeBtn');
+    const promoInput = document.getElementById('promoInput');
+    const premiumSuccessMsg = document.getElementById('premiumSuccessMsg');
+
+    // 2. Variables de estado
     let globalAuthor = "@miusuario";
     let currentTheme = "theme-classic"; 
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
 
-    window.isPremium = false;
+    // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
+    const codigoGuardado = localStorage.getItem('userPromoCode');
+    window.isPremium = (codigoGuardado === CODIGO_ACTUAL);
+
+    // Si ya es premium al entrar, aplicamos cambios visuales
+   if (window.isPremium) {
+        document.body.classList.add('premium-mode');
+        
+        if (premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
+        if (removeWatermarkTrigger) removeWatermarkTrigger.style.display = 'none';
+        if (promoCodeArea) promoCodeArea.style.display = 'none';
+    }
 
     // ---------------------------------------------------------
-    // FUNCIÓN 1: Renderizar las diapositivas
+    // FUNCIÓN PRINCIPAL: Renderizar las diapositivas
     // ---------------------------------------------------------
     function renderSlides(text) {
         previewContainer.innerHTML = '';
         const paragraphs = text.split('\n\n'); 
+        
+        const contentToRender = (paragraphs.length === 1 && paragraphs[0] === "") 
+                                ? ["Escribe aquí tu frase genial..."] 
+                                : paragraphs;
 
-        // Lógica del logo
         let logoHTML = "";
         if (globalLogoUrl !== "") {
             logoHTML = `<img src="${globalLogoUrl}" class="slide-logo" alt="Logo">`;
         }
         
-        paragraphs.forEach((paragraph, index) => {
+        contentToRender.forEach((paragraph, index) => {
             const slide = document.createElement('div');
-            // Aplicamos tema
-            const premiumClass = windows.ispremium ? 'premium-mode' : '';
-
-            slie.className = `carousel-slide ${currentTheme} ${premiumClass}`;
+            
+            const premiumClass = window.isPremium ? 'premium-mode' : '';
+            slide.className = `carousel-slide ${currentTheme} ${premiumClass}`;
             
             slide.innerHTML = `
                 <div class="slide-content" style="flex-direction: column;">
                     ${logoHTML}
-                    
                     <p class="${currentFont}" style="font-size: 24px; font-weight: bold; text-align: center; margin: 0;">
-                        ${paragraph || "Escribe algo..."}
+                        ${paragraph}
                     </p>
                 </div>
                 <div class="slide-footer">
                     <span class="${currentFont}">${globalAuthor}</span>
-                    <span class="watermark ${currentFont}">${index + 1}/${paragraphs.length}</span>
+                    <span class="watermark ${currentFont}">${index + 1}/${contentToRender.length}</span>
                 </div>
             `;
             previewContainer.appendChild(slide);
@@ -59,12 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // EVENTOS
     // ---------------------------------------------------------
     
-    textInput.addEventListener('input', (e) => renderSlides(e.target.value));
-    
-    authorInput.addEventListener('input', (e) => {
-        globalAuthor = e.target.value || "@miusuario";
-        renderSlides(textInput.value); 
-    });
+    if(textInput) textInput.addEventListener('input', (e) => renderSlides(e.target.value));
+
+    if(authorInput) {
+        authorInput.addEventListener('input', (e) => {
+            globalAuthor = e.target.value || "@miusuario";
+            renderSlides(textInput ? textInput.value : ""); 
+        });
+    }
 
     themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -73,100 +95,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    logoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                globalLogoUrl = event.target.result;
-                renderSlides(textInput.value);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    // Subir Logo (CON CANDADO)
+    if(logoInput) {
+        logoInput.addEventListener('change', (e) => {
+            if (!window.isPremium) {
+                alert("🔒 La carga de Logos es una función exclusiva para usuarios PRO.\n\nIntroduce tu código VIP para desbloquearla.");
+                logoInput.value = ""; 
+                if(promoCodeArea) promoCodeArea.style.display = 'flex';
+                return;
+            }
 
-    // NUEVO: Evento para el cambio de fuente
-    fontSelect.addEventListener('change', (e) => {
-        // Actualizamos la variable con el valor del select (ej: "font-playfair")
-        currentFont = e.target.value;
-        // Re-renderizamos para ver el cambio
-        renderSlides(textInput.value);
-    });
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    globalLogoUrl = event.target.result;
+                    renderSlides(textInput.value);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
-    // ---------------------------------------------------------
-    // FUNCIÓN 2: Descargar PDF
-    // ---------------------------------------------------------
-    downloadBtn.addEventListener('click', async () => {
-        const btnOriginalText = downloadBtn.innerText;
-        downloadBtn.innerText = "Procesando...";
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [500, 500] });
-        const slides = document.querySelectorAll('.carousel-slide');
-
-        for (let i = 0; i < slides.length; i++) {
-            // Nota: html2canvas a veces tarda en cargar fuentes externas. 
-            // Esperar un poco o asegurar carga es ideal, pero para MVP funciona.
-            const canvas = await html2canvas(slides[i], {
-                scale: 2, 
-                useCORS: true,
-                allowTaint: true 
-            });
-
-            const imgData = canvas.toDataURL('image/png');
-            if (i > 0) doc.addPage([500, 500]);
-            doc.addImage(imgData, 'PNG', 0, 0, 500, 500);
-        }
-
-        doc.save('carrusel-aromalab.pdf');
-        downloadBtn.innerText = btnOriginalText;
-    });
+    if(fontSelect) {
+        fontSelect.addEventListener('change', (e) => {
+            currentFont = e.target.value;
+            renderSlides(textInput.value);
+        });
+    }
 
     // ---------------------------------------------------------
-    // LÓGICA DE MONETIZACIÓN (NUEVO BLOQUE)
+    // MONETIZACIÓN
     // ---------------------------------------------------------
     
-    const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
-    const promoCodeArea = document.getElementById('promoCodeArea');
-    const applyCodeBtn = document.getElementById('applyCodeBtn');
-    const promoInput = document.getElementById('promoInput');
-    const premiumSuccessMsg = document.getElementById('premiumSuccessMsg');
+    if(removeWatermarkTrigger) {
+        removeWatermarkTrigger.addEventListener('click', () => {
+            if (promoCodeArea.style.display === 'none') {
+                promoCodeArea.style.display = 'flex';
+            } else {
+                promoCodeArea.style.display = 'none';
+            }
+        });
+    }
 
-    // 1. Mostrar/Ocultar el input de código
-    removeWatermarkTrigger.addEventListener('click', () => {
-        if (promoCodeArea.style.display === 'none') {
-            promoCodeArea.style.display = 'flex';
-        } else {
-            promoCodeArea.style.display = 'none';
-        }
-    });
+    if(applyCodeBtn) {
+        applyCodeBtn.addEventListener('click', () => {
+            const codigoIngresado = promoInput.value.trim().toUpperCase();
 
-    // 2. Validar el código VIP
-    applyCodeBtn.addEventListener('click', () => {
-        const codigoIngresado = promoInput.value.trim().toUpperCase();
-        const CODIGO_SECRETO = "PRO2026"; // ¡Este es el código que venderías!
+            if (codigoIngresado === CODIGO_ACTUAL) {
+                localStorage.setItem('userPromoCode', codigoIngresado);
+                window.isPremium = true; 
+                document.body.classList.add('premium-mode');
+                renderSlides(textInput.value);
+                
+                promoCodeArea.style.display = 'none';
+                removeWatermarkTrigger.style.display = 'none';
+                if(premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
+                
+                alert("¡Código aceptado! Disfruta tu versión PRO.");
+            } else {
+                alert("Código incorrecto. El código de este mes es: " + CODIGO_ACTUAL);
+            }
+        });
+    }
 
-        if (codigoIngresado === CODIGO_SECRETO) {
-            // ¡MAGIA! Añadimos la clase especial a CADA slide existente
-            document.querySelectorAll('.carousel-slide').forEach(slide => {
-                slide.classList.add('premium-mode');
-            });
-
-            // Y aseguramos que las futuras slides también lo tengan
-            // (Esto requiere un pequeño truco: guardar una variable global)
-            window.isPremium = true; 
-
-            // Feedback visual
-            promoCodeArea.style.display = 'none';
-            removeWatermarkTrigger.style.display = 'none';
-            premiumSuccessMsg.style.display = 'block';
+    // ---------------------------------------------------------
+    // DESCARGAR PDF
+    // ---------------------------------------------------------
+    if(downloadBtn) {
+        downloadBtn.addEventListener('click', async () => {
+            const btnOriginalText = downloadBtn.innerText;
+            downloadBtn.innerText = "Procesando...";
             
-            alert("¡Código correcto! Marca de agua eliminada.");
-        } else {
-            alert("Código incorrecto. Intenta con PRO2026 (guiño, guiño)");
-        }
-    });
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [500, 500] });
+            const slides = document.querySelectorAll('.carousel-slide');
 
-    // Inicialización
+            for (let i = 0; i < slides.length; i++) {
+                const canvas = await html2canvas(slides[i], {
+                    scale: 2, 
+                    useCORS: true,
+                    allowTaint: true 
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                if (i > 0) doc.addPage([500, 500]);
+                doc.addImage(imgData, 'PNG', 0, 0, 500, 500);
+            }
+
+            doc.save('carrusel-aromalab.pdf');
+            downloadBtn.innerText = btnOriginalText;
+        });
+    }
+
     renderSlides("");
 });
