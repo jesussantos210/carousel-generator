@@ -1,5 +1,4 @@
 // --- CONFIGURACIÓN DEL DUEÑO ---
-const CODIGO_ACTUAL = "ENERO2026"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Referencias DOM
@@ -25,8 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFont = "font-inter";
 
     // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
+   // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
-    window.isPremium = (codigoGuardado === CODIGO_ACTUAL);
+    
+    // CAMBIO: Ahora verificamos si el código guardado existe dentro de tu lista de 100 códigos
+    if (codigoGuardado && typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoGuardado)) {
+        window.isPremium = true;
+    } else {
+        window.isPremium = false;
+    }
 
     // Si ya es premium al entrar, aplicamos cambios visuales
    if (window.isPremium) {
@@ -62,13 +68,21 @@ document.addEventListener('DOMContentLoaded', () => {
             slide.innerHTML = `
                 <div class="slide-content" style="flex-direction: column;">
                     ${logoHTML}
+                    
                     <p class="${currentFont}" style="font-size: 24px; font-weight: bold; text-align: center; margin: 0;">
                         ${paragraph}
                     </p>
                 </div>
-                <div class="slide-footer">
-                    <span class="${currentFont}">${globalAuthor}</span>
-                    <span class="watermark ${currentFont}">${index + 1}/${contentToRender.length}</span>
+
+                <div class="slide-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                    
+                    <span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span>
+
+                    <span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">
+                        ⚡ Creado con AromaLab
+                    </span>
+
+                    <span class="${currentFont}" style="font-size: 0.8rem">${index + 1}/${contentToRender.length}</span>
                 </div>
             `;
             previewContainer.appendChild(slide);
@@ -138,27 +152,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+   // Validar el código (VERSIÓN LISTA DE CÓDIGOS)
     if(applyCodeBtn) {
         applyCodeBtn.addEventListener('click', () => {
             const codigoIngresado = promoInput.value.trim().toUpperCase();
 
-            if (codigoIngresado === CODIGO_ACTUAL) {
+            // CAMBIO AQUÍ: Verificamos si el código está en la lista de 100
+            if (typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoIngresado)) {
+                
+                // 1. Guardamos el código
                 localStorage.setItem('userPromoCode', codigoIngresado);
+                
+                // 2. Activamos
                 window.isPremium = true; 
                 document.body.classList.add('premium-mode');
                 renderSlides(textInput.value);
                 
+                // Feedback visual
                 promoCodeArea.style.display = 'none';
                 removeWatermarkTrigger.style.display = 'none';
                 if(premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
                 
-                alert("¡Código aceptado! Disfruta tu versión PRO.");
+                alert("¡Código válido! Bienvenido al plan PRO.");
             } else {
-                alert("Código incorrecto. El código de este mes es: " + CODIGO_ACTUAL);
+                alert("Código no válido o no encontrado en la lista.");
             }
         });
     }
-
     // ---------------------------------------------------------
     // DESCARGAR PDF
     // ---------------------------------------------------------
