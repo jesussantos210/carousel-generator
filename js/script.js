@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
 
+    // --- NUEVO: Lista de temas que son de pago ---
+    const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury'];
+
     // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
    // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
@@ -64,22 +67,43 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const premiumClass = window.isPremium ? 'premium-mode' : '';
             slide.className = `carousel-slide ${currentTheme} ${premiumClass}`;
+
+            // --- VISTA PREVIA
+            let previewOverlay = "";
+
+            if (PREMIUM_THEMES.includes(currenteTheme) && !window.isPremium) {previewOverlay = `
+                <div style="
+                        position: absolute; 
+                        top: 0; left: 0; right: 0; bottom: 0;
+                        background: rgba(0,0,0,0.5); 
+                        display: flex; 
+                        flex-direction: column;
+                        justify-content: center; 
+                        align-items: center; 
+                        z-index: 100;
+                        pointer-events: none; /* Para que puedan seguir moviendo el texto de abajo */
+                    ">
+                        <span style="font-size: 80px;">🔒</span>
+                        <span style="color: white; font-size: 30px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+                            Vista Previa<br>Premium
+                        </span>
+                        <span style="color: #ddd; font-size: 14px; margin-top: 10px;">
+                            Usa tu código para quitar esta marca
+                        </span>
+                    </div>
+                `;
+            }
             
             slide.innerHTML = `
-                <div class="slide-content" style="flex-direction: column;">
-                    ${logoHTML}
-                    
-                    <p class="${currentFont}" style="font-size: 24px; font-weight: bold; text-align: center; margin: 0;">
-                        ${paragraph}
-                    </p>
-                </div>
+                <div class="slide-content">
+                    ${previewOverlay} ${logoHTML}       ${textHtml1}      ${textHtml2}      </div>
 
                 <div class="slide-footer" style="display: flex; justify-content: space-between; align-items: center;">
                     
                     <span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span>
 
                     <span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">
-                        ⚡ Creado con AromaLab
+                        ⚡ Creado con SwipeStudio
                     </span>
 
                     <span class="${currentFont}" style="font-size: 0.8rem">${index + 1}/${contentToRender.length}</span>
@@ -102,10 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Botones de temas (PERMITO VISTA PREVIA)
     themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentTheme = btn.getAttribute('data-theme');
-            renderSlides(textInput.value);
+
+            const isPremmiumTheme = btn.getAttribute('data-premium') === "true";
+            if (isPremiumTheme && !window.isPremium) {
+                console.log("Modo Vista Previa Activado"); 
+            }
+
+            slindesState = [];
+            renderSlides();
         });
     });
 
@@ -204,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 doc.addImage(imgData, 'PNG', 0, 0, 500, 500);
             }
 
-            doc.save('carrusel-aromalab.pdf');
+            doc.save('carrusel-swipestudio.pdf');
             downloadBtn.innerText = btnOriginalText;
         });
     }
