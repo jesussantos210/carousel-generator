@@ -242,6 +242,39 @@ input[type="text"], select {
     border: 4px solid #000000;
 }
 
+.carousel-slide.theme-cyberpunk {
+    background-color: #0f0f0f !important;
+    color: #00f3ff !important;
+    border: 2px dashed #d946ef;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.carousel-slide.theme-cyberpunk .slide-footer {
+    border-top: 1px dashed #d946ef;
+    color: #d946ef;
+}
+
+.carousel-slide.theme-coffee {
+    background: linear-gradient(to bottom, #6f4e37, #3e2723) !important;
+    color: #efebe9 !important;
+    border: 1px solid #d7ccc8;
+}
+
+.carousel-slide.theme-luxury {
+    background-color: #000000 !important;
+    color: #d4af37 !important;
+    border: 3px solid #d4af37;
+}
+
+.carousel-slide.theme-luxury .slide-logo {
+    filter: drop-shadow(0 0 5px #d4af37);
+}
+
+.carousel-slide.theme-mint {
+    background-color: #e0f2f1 !important;
+    color: #004d40 !important;
+    border: none;
+}
 /* Botones selectores de tema */
 .theme-buttons {
     display: flex;
