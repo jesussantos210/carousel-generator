@@ -179,15 +179,18 @@ input[type="text"], select {
 .carousel-slide {
     min-width: 500px;
     height: 500px;
-    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 30px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border-radius: 8px;
+    overflow: hidden;
     position: relative;
+    border: 2px solid transparent;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
     box-sizing: border-box;
-    transition: background 0.3s, color 0.3s;
 }
 
 .slide-content {
@@ -246,7 +249,7 @@ input[type="text"], select {
     background-color: #0f0f0f !important;
     color: #00f3ff !important;
     border: 2px dashed #d946ef;
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
 }
 
 .carousel-slide.theme-cyberpunk .slide-footer {

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LISTA DE TEMAS DE PAGO ---
     // Nota: Asegúrate que estos nombres coinciden con tu CSS (.theme-cyber, .theme-luxury)
-    const PREMIUM_THEMES = ['theme-cyber', 'theme-luxury']; 
+    const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury']; 
 
     // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
@@ -238,12 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ---------------------------------------------------------
-    // DESCARGAR PDF (CON SEGURIDAD)
+    // DESCARGAR PDF 
     // ---------------------------------------------------------
     if(downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
             
-            // SEGURIDAD: Evitar descarga si usa tema premium sin pagar
+            // 1. SEGURIDAD
             if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
                 alert("⭐ Estás usando un Diseño Premium.\n\nPara descargar este carrusel sin la marca de agua y en alta calidad, por favor introduce tu código PRO.");
                 if(promoCodeArea) promoCodeArea.style.display = 'flex';
@@ -254,29 +254,31 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadBtn.innerText = "Procesando...";
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [1080, 1080] }); // Mejor calidad 1080
+            // Configuramos el PDF para que sea cuadrado perfecto (1080x1080)
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [1080, 1080] });
             const slides = document.querySelectorAll('.carousel-slide');
 
             for (let i = 0; i < slides.length; i++) {
-                // Forzamos tamaño para captura de alta calidad
-                const originalWidth = slides[i].style.width;
-                const originalHeight = slides[i].style.height;
-                slides[i].style.width = "1080px";
-                slides[i].style.height = "1080px";
+                const slide = slides[i];
 
-                const canvas = await html2canvas(slides[i], {
-                    scale: 1, 
-                    useCORS: true,
+                // CÁLCULO MÁGICO: ¿Cuánto zoom necesitamos para llegar a 1080px?
+                // Si tu slide mide 500px, el scale será 2.16 (500 * 2.16 = 1080)
+                const scaleFactor = 1080 / slide.offsetWidth;
+
+                const canvas = await html2canvas(slide, {
+                    scale: scaleFactor, // <--- AQUÍ ESTÁ EL TRUCO (Hacemos Zoom, no estiramos)
+                    useCORS: true,      // Permite cargar imágenes externas (logos)
                     allowTaint: true,
-                    backgroundColor: null
+                    backgroundColor: null, // Respeta transparencias o bordes redondos
+                    logging: false
                 });
 
-                // Restauramos tamaño
-                slides[i].style.width = originalWidth;
-                slides[i].style.height = originalHeight;
-
                 const imgData = canvas.toDataURL('image/png');
+                
+                // Si no es la primera página, añadimos una nueva hoja al PDF
                 if (i > 0) doc.addPage([1080, 1080]);
+                
+                // Pegamos la foto ocupando todo el PDF (0,0 -> 1080,1080)
                 doc.addImage(imgData, 'PNG', 0, 0, 1080, 1080);
             }
 
