@@ -9,9 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtns = document.querySelectorAll('.theme-btn');
     const logoInput = document.getElementById('logoInput');
     const fontSelect = document.getElementById('fontSelect');
-    const formatSelect = document.getElementById('formatSelect');
+    const formatSelect = document.getElementById('formatSelect'); // Selector de formato
+    
+    // Referencias de Fondo Personalizado
+    const bgColorInput = document.getElementById('bgColorInput');
+    const bgImageInput = document.getElementById('bgImageInput');
+    const resetBgBtn = document.getElementById('resetBgBtn');
 
-    // Referencias de Monetización
+    // Referencias de Monetización y Texto
     const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
     const promoCodeArea = document.getElementById('promoCodeArea');
     const applyCodeBtn = document.getElementById('applyCodeBtn');
@@ -25,21 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTheme = "theme-classic"; 
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
-    let slidesState = []; // Faltaba inicializar esto
-    let currentFormat = "square"; // Nuevo: Formato de diapositiva
-    let currentFontSize = 24; // Tamaño de fuente predeterminado
+    let slidesState = []; 
+    let currentFormat = "square"; 
+    let currentFontSize = 24; 
+    let customBgColor = ""; 
+    let customBgImage = ""; // <--- CORREGIDO (Antes decía letcustomBgImage)
 
-    // Medidas para diferentes formatos
+    // Medidas para diferentes formatos (Referencia para JS)
     const FORMAT_DIMENSIONS = {
-        square: { width: 1080, height: 1080 },
-        portrait: { width: 1080, height: 1350 },
-        story: { width: 1080, height: 1920 },
+        square:    { width: 1080, height: 1080 },
+        portrait:  { width: 1080, height: 1350 },
+        story:     { width: 1080, height: 1920 },
         landscape: { width: 1920, height: 1080 }
     };
 
     // --- LISTA DE TEMAS DE PAGO ---
-    
-    const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury']; 
+    const PREMIUM_THEMES = ['theme-cyber', 'theme-luxury']; 
 
     // VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
@@ -62,12 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
     // FUNCIÓN PRINCIPAL: Renderizar las diapositivas
     // ---------------------------------------------------------
-    function renderSlides(text = textInput.value) { // Valor por defecto para evitar errores
+    function renderSlides(text = textInput.value) { 
         previewContainer.innerHTML = '';
         
-        // Manejo seguro del texto
         if (!text) text = "";
-        
         const paragraphs = text.split('\n\n'); 
         
         const contentToRender = (paragraphs.length === 1 && paragraphs[0] === "") 
@@ -83,23 +87,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const slide = document.createElement('div');
             
             const premiumClass = window.isPremium ? 'premium-mode' : '';
+            // Aplicamos clase de tema y de formato
             slide.className = `carousel-slide ${currentTheme} ${premiumClass} format-${currentFormat}`;
 
-            // --- A. DEFINIR EL TEXTO (Esto faltaba y rompía el script) ---
-            // Creamos el HTML del texto principal
+            // --- NUEVO: APLICAR FONDO PERSONALIZADO (Esto faltaba) ---
+            // 1. Limpiamos estilos previos manuales
+            slide.style.background = ""; 
+            slide.style.backgroundImage = "";
+            slide.style.backgroundColor = "";
+
+            // 2. Inyectamos personalización si existe
+            if (customBgImage) {
+                slide.style.backgroundImage = `url(${customBgImage})`;
+                // El CSS .carousel-slide ya tiene background-size: cover
+            } else if (customBgColor) {
+                slide.style.backgroundColor = customBgColor;
+                slide.style.backgroundImage = "none"; // Matamos texturas del tema
+            }
+            // ---------------------------------------------------------
+
+            // --- A. DEFINIR EL TEXTO ---
             const textHtml1 = `
                 <p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px;">
                     ${paragraph}
                 </p>
             `;
             
-            // Dejamos el secundario vacío por ahora (versión estable)
             const textHtml2 = ""; 
 
             // --- B. VISTA PREVIA (CANDADO) ---
             let previewOverlay = "";
 
-            // CORRECCIÓN: 'currentTheme' estaba mal escrito como 'currenteTheme'
             if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
                 previewOverlay = `
                     <div style="
@@ -134,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${textHtml2}      
                 </div>
 
-                <div class="slide-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="slide-footer">
                     <span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span>
 
                     <span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">
@@ -176,20 +194,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- EVENTOS DE FONDO ---
+    if (bgColorInput) {
+        bgColorInput.addEventListener('input', (e) => {
+            customBgColor = e.target.value;
+            customBgImage = ""; // Limpiar imagen si se selecciona color
+            if(bgImageInput) bgImageInput.value = "";
+            renderSlides();
+        });
+    }
+
+    if (bgImageInput) {
+        bgImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    customBgImage = event.target.result;
+                    customBgColor = ""; // Limpiar color si se selecciona imagen
+                    if(bgColorInput) bgColorInput.value = ""; // Reset visual (opcional)
+                    renderSlides();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (resetBgBtn) {
+        resetBgBtn.addEventListener('click', () => {
+            customBgColor = "";
+            customBgImage = "";
+            if(bgColorInput) bgColorInput.value = "#ffffff";
+            if(bgImageInput) bgImageInput.value = "";
+            renderSlides();
+        });
+    }
+
     // Botones de temas
     themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentTheme = btn.getAttribute('data-theme');
 
-            // CORRECCIÓN: 'isPremiumTheme' estaba mal escrito
             const isPremiumTheme = btn.getAttribute('data-premium') === "true";
             
             if (isPremiumTheme && !window.isPremium) {
                 console.log("Modo Vista Previa Activado"); 
-                // Opcional: Mostrar mensaje toast o alerta suave
             }
 
-            // CORRECCIÓN: 'slidesState' estaba mal escrito
+            // Reset de fondos personalizados al cambiar tema (Mejora UX)
+            customBgColor = "";
+            customBgImage = "";
+            if(bgColorInput) bgColorInput.value = "#ffffff";
+            if(bgImageInput) bgImageInput.value = "";
+
             slidesState = [];
             renderSlides();
         });
@@ -250,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.isPremium = true; 
                 document.body.classList.add('premium-mode');
                 
-                // 2. Refrescamos la vista (importante para quitar candados)
+                // 2. Refrescamos la vista
                 renderSlides();
                 
                 // Feedback visual
@@ -265,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-// ---------------------------------------------------------
+    // ---------------------------------------------------------
     // DESCARGAR PDF (VERSIÓN BLINDADA Y AUTÓNOMA)
     // ---------------------------------------------------------
     if(downloadBtn) {
@@ -282,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadBtn.innerText = "Calculando medidas...";
             
             // 2. LEER FORMATO DIRECTAMENTE DEL HTML (¡Más seguro!)
-            // Así evitamos que la variable se quede "pegada" en el valor anterior
             const selectElement = document.getElementById('formatSelect');
             const formatoActual = selectElement ? selectElement.value : 'square';
 
@@ -297,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetW = MEDIDAS[formatoActual].w;
             const targetH = MEDIDAS[formatoActual].h;
 
-            console.log(`Generando PDF: ${formatoActual} (${targetW}x${targetH})`); // Para depurar
+            console.log(`Generando PDF: ${formatoActual} (${targetW}x${targetH})`); 
 
             const { jsPDF } = window.jspdf;
             
@@ -305,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const doc = new jsPDF({ 
                 orientation: targetW > targetH ? 'landscape' : 'portrait', 
                 unit: 'px', 
-                format: [targetW, targetH] // <--- ¡AQUÍ FORZAMOS EL TAMAÑO!
+                format: [targetW, targetH] 
             });
 
             const slides = document.querySelectorAll('.carousel-slide');
@@ -313,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
 
-                // Factor de Zoom = Medida Objetivo / Medida en Pantalla (500px)
+                // Factor de Zoom
                 const scaleFactor = targetW / slide.offsetWidth;
 
                 const canvas = await html2canvas(slide, {
@@ -330,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 doc.addImage(imgData, 'PNG', 0, 0, targetW, targetH);
             }
 
-            // Nombre del archivo dinámico
             doc.save(`swipestudio-${formatoActual}.pdf`);
             downloadBtn.innerText = btnOriginalText;
         });

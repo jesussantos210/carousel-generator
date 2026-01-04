@@ -381,3 +381,60 @@ input[type="text"], select {
     line-height: 1.4;
     word-break: break-word;
 }
+
+/* --- CONTROLES DE FONDO --- */
+.bg-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.bg-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.color-picker {
+    cursor: pointer;
+    height: 40px;
+    width: 50px;
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.mini-label {
+    font-size: 10px;
+    color: #666;
+}
+
+.file-input {
+    font-size: 11px;
+    width: 100%;
+}
+
+.reset-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f0f0f0;
+}
+
+.reset-btn:hover {
+    background: #e0e0e0;
+}
+
+/* --- FONDOS DE SLIDE --- */
+.carousel-slide {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
