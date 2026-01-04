@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- LISTA DE TEMAS DE PAGO ---
-    const PREMIUM_THEMES = ['theme-cyber', 'theme-luxury']; 
+    const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury']; 
 
     // VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
@@ -90,19 +90,25 @@ document.addEventListener('DOMContentLoaded', () => {
             // Aplicamos clase de tema y de formato
             slide.className = `carousel-slide ${currentTheme} ${premiumClass} format-${currentFormat}`;
 
-            // --- NUEVO: APLICAR FONDO PERSONALIZADO (Esto faltaba) ---
-            // 1. Limpiamos estilos previos manuales
+// --- APLICAR FONDO (VERSIÓN FUERZA BRUTA) ---
+            
+            // 1. Reseteo agresivo
+            slide.style.removeProperty('background-image');
+            slide.style.removeProperty('background-color');
             slide.style.background = ""; 
-            slide.style.backgroundImage = "";
-            slide.style.backgroundColor = "";
 
-            // 2. Inyectamos personalización si existe
+            // 2. Aplicar con prioridad máxima
             if (customBgImage) {
-                slide.style.backgroundImage = `url(${customBgImage})`;
-                // El CSS .carousel-slide ya tiene background-size: cover
-            } else if (customBgColor) {
-                slide.style.backgroundColor = customBgColor;
-                slide.style.backgroundImage = "none"; // Matamos texturas del tema
+                // Si hay imagen, forzamos que se muestre y cubra todo
+                slide.style.setProperty('background-image', `url(${customBgImage})`, 'important');
+                slide.style.setProperty('background-size', 'cover', 'important');
+                slide.style.setProperty('background-position', 'center', 'important');
+                slide.style.setProperty('background-repeat', 'no-repeat', 'important');
+            } 
+            else if (customBgColor) {
+                // Si hay color, forzamos el color y quitamos cualquier imagen del tema
+                slide.style.setProperty('background-color', customBgColor, 'important');
+                slide.style.setProperty('background-image', 'none', 'important');
             }
             // ---------------------------------------------------------
 
