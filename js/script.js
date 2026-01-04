@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyCodeBtn = document.getElementById('applyCodeBtn');
     const promoInput = document.getElementById('promoInput');
     const premiumSuccessMsg = document.getElementById('premiumSuccessMsg');
+    const sizeInput = document.getElementById('sizeInput');
+    const sizeValue = document.getElementById('sizeValue');
 
     // 2. Variables de estado
     let globalAuthor = "@miusuario";
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFont = "font-inter";
     let slidesState = []; // Faltaba inicializar esto
     let currentFormat = "square"; // Nuevo: Formato de diapositiva
+    let currentFontSize = 24; // Tamaño de fuente predeterminado
 
     // Medidas para diferentes formatos
     const FORMAT_DIMENSIONS = {
@@ -85,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- A. DEFINIR EL TEXTO (Esto faltaba y rompía el script) ---
             // Creamos el HTML del texto principal
             const textHtml1 = `
-                <p class="${currentFont}" style="font-size: 24px; font-weight: bold; text-align: center; margin: 0; padding: 10px; z-index: 10; width: 100%;">
+                <p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px;">
                     ${paragraph}
                 </p>
             `;
@@ -162,6 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
         authorInput.addEventListener('input', (e) => {
             globalAuthor = e.target.value || "@miusuario";
             renderSlides(); 
+        });
+    }
+
+    if(sizeInput) {
+        sizeInput.addEventListener('input', (e) => {
+            currentFontSize = e.target.value;
+            if(sizeValue) sizeValue.innerText = `${currentFontSize}px`;
+            renderSlides();
         });
     }
 

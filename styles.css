@@ -345,3 +345,34 @@ input[type="text"], select {
 .carousel-slide.format-landscape {
     height: 281px;
 }
+
+/* --- CONTROLES DEL UI --- */
+.control-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+#sizeValue {
+    font-weight: bold;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.range-slider {
+    width: 100%;
+    cursor: pointer;
+}
+
+
+/* --- ESTILO DEL TEXTO EN EL SLIDE --- */
+.slide-text-content {
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    z-index: 10;
+    width: 100%;
+    line-height: 1.4;
+    word-break: break-word;
+}
