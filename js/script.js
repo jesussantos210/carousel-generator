@@ -1,4 +1,4 @@
-// --- CONFIGURACIÓN DEL DUEÑO ---
+// --- CONFIGURACIÓN DE SWIPESTUDIO ---
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Referencias DOM
@@ -22,15 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTheme = "theme-classic"; 
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
+    let slidesState = []; // Faltaba inicializar esto
 
-    // --- NUEVO: Lista de temas que son de pago ---
-    const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury'];
+    // --- LISTA DE TEMAS DE PAGO ---
+    // Nota: Asegúrate que estos nombres coinciden con tu CSS (.theme-cyber, .theme-luxury)
+    const PREMIUM_THEMES = ['theme-cyber', 'theme-luxury']; 
 
     // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
-   // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
     
-    // CAMBIO: Ahora verificamos si el código guardado existe dentro de tu lista de 100 códigos
+    // Verificamos si el código guardado existe en la lista cargada desde codes.js
     if (codigoGuardado && typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoGuardado)) {
         window.isPremium = true;
     } else {
@@ -40,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Si ya es premium al entrar, aplicamos cambios visuales
    if (window.isPremium) {
         document.body.classList.add('premium-mode');
-        
         if (premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
         if (removeWatermarkTrigger) removeWatermarkTrigger.style.display = 'none';
         if (promoCodeArea) promoCodeArea.style.display = 'none';
@@ -49,8 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
     // FUNCIÓN PRINCIPAL: Renderizar las diapositivas
     // ---------------------------------------------------------
-    function renderSlides(text) {
+    function renderSlides(text = textInput.value) { // Valor por defecto para evitar errores
         previewContainer.innerHTML = '';
+        
+        // Manejo seguro del texto
+        if (!text) text = "";
+        
         const paragraphs = text.split('\n\n'); 
         
         const contentToRender = (paragraphs.length === 1 && paragraphs[0] === "") 
@@ -68,38 +72,56 @@ document.addEventListener('DOMContentLoaded', () => {
             const premiumClass = window.isPremium ? 'premium-mode' : '';
             slide.className = `carousel-slide ${currentTheme} ${premiumClass}`;
 
-            // --- VISTA PREVIA
+            // --- A. DEFINIR EL TEXTO (Esto faltaba y rompía el script) ---
+            // Creamos el HTML del texto principal
+            const textHtml1 = `
+                <p class="${currentFont}" style="font-size: 24px; font-weight: bold; text-align: center; margin: 0; padding: 10px; z-index: 10; width: 100%;">
+                    ${paragraph}
+                </p>
+            `;
+            
+            // Dejamos el secundario vacío por ahora (versión estable)
+            const textHtml2 = ""; 
+
+            // --- B. VISTA PREVIA (CANDADO) ---
             let previewOverlay = "";
 
-            if (PREMIUM_THEMES.includes(currenteTheme) && !window.isPremium) {previewOverlay = `
-                <div style="
+            // CORRECCIÓN: 'currentTheme' estaba mal escrito como 'currenteTheme'
+            if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                previewOverlay = `
+                    <div style="
                         position: absolute; 
                         top: 0; left: 0; right: 0; bottom: 0;
-                        background: rgba(0,0,0,0.5); 
+                        background: rgba(0,0,0,0.85); 
                         display: flex; 
                         flex-direction: column;
                         justify-content: center; 
                         align-items: center; 
                         z-index: 100;
-                        pointer-events: none; /* Para que puedan seguir moviendo el texto de abajo */
+                        border-radius: 8px;
+                        pointer-events: none;
                     ">
-                        <span style="font-size: 80px;">🔒</span>
-                        <span style="color: white; font-size: 30px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
-                            Vista Previa<br>Premium
+                        <span style="font-size: 60px;">🔒</span>
+                        <span style="color: white; font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+                            Premium
                         </span>
                         <span style="color: #ddd; font-size: 14px; margin-top: 10px;">
-                            Usa tu código para quitar esta marca
+                            Usa tu código para desbloquear
                         </span>
                     </div>
                 `;
             }
             
+            // --- C. INYECTAR HTML FINAL ---
             slide.innerHTML = `
                 <div class="slide-content">
-                    ${previewOverlay} ${logoHTML}       ${textHtml1}      ${textHtml2}      </div>
+                    ${previewOverlay} 
+                    ${logoHTML}       
+                    ${textHtml1}      
+                    ${textHtml2}      
+                </div>
 
                 <div class="slide-footer" style="display: flex; justify-content: space-between; align-items: center;">
-                    
                     <span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span>
 
                     <span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">
@@ -122,21 +144,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if(authorInput) {
         authorInput.addEventListener('input', (e) => {
             globalAuthor = e.target.value || "@miusuario";
-            renderSlides(textInput ? textInput.value : ""); 
+            renderSlides(); 
         });
     }
 
-    // Botones de temas (PERMITO VISTA PREVIA)
+    // Botones de temas
     themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentTheme = btn.getAttribute('data-theme');
 
-            const isPremmiumTheme = btn.getAttribute('data-premium') === "true";
+            // CORRECCIÓN: 'isPremiumTheme' estaba mal escrito
+            const isPremiumTheme = btn.getAttribute('data-premium') === "true";
+            
             if (isPremiumTheme && !window.isPremium) {
                 console.log("Modo Vista Previa Activado"); 
+                // Opcional: Mostrar mensaje toast o alerta suave
             }
 
-            slindesState = [];
+            // CORRECCIÓN: 'slidesState' estaba mal escrito
+            slidesState = [];
             renderSlides();
         });
     });
@@ -156,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     globalLogoUrl = event.target.result;
-                    renderSlides(textInput.value);
+                    renderSlides();
                 };
                 reader.readAsDataURL(file);
             }
@@ -166,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(fontSelect) {
         fontSelect.addEventListener('change', (e) => {
             currentFont = e.target.value;
-            renderSlides(textInput.value);
+            renderSlides();
         });
     }
 
@@ -184,21 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-   // Validar el código (VERSIÓN LISTA DE CÓDIGOS)
+    // Validar el código
     if(applyCodeBtn) {
         applyCodeBtn.addEventListener('click', () => {
             const codigoIngresado = promoInput.value.trim().toUpperCase();
 
-            // CAMBIO AQUÍ: Verificamos si el código está en la lista de 100
             if (typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoIngresado)) {
                 
-                // 1. Guardamos el código
+                // 1. Guardamos y Activamos
                 localStorage.setItem('userPromoCode', codigoIngresado);
-                
-                // 2. Activamos
                 window.isPremium = true; 
                 document.body.classList.add('premium-mode');
-                renderSlides(textInput.value);
+                
+                // 2. Refrescamos la vista (importante para quitar candados)
+                renderSlides();
                 
                 // Feedback visual
                 promoCodeArea.style.display = 'none';
@@ -213,27 +238,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ---------------------------------------------------------
-    // DESCARGAR PDF
+    // DESCARGAR PDF (CON SEGURIDAD)
     // ---------------------------------------------------------
     if(downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
+            
+            // SEGURIDAD: Evitar descarga si usa tema premium sin pagar
+            if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                alert("⭐ Estás usando un Diseño Premium.\n\nPara descargar este carrusel sin la marca de agua y en alta calidad, por favor introduce tu código PRO.");
+                if(promoCodeArea) promoCodeArea.style.display = 'flex';
+                return;
+            }
+
             const btnOriginalText = downloadBtn.innerText;
             downloadBtn.innerText = "Procesando...";
             
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [500, 500] });
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [1080, 1080] }); // Mejor calidad 1080
             const slides = document.querySelectorAll('.carousel-slide');
 
             for (let i = 0; i < slides.length; i++) {
+                // Forzamos tamaño para captura de alta calidad
+                const originalWidth = slides[i].style.width;
+                const originalHeight = slides[i].style.height;
+                slides[i].style.width = "1080px";
+                slides[i].style.height = "1080px";
+
                 const canvas = await html2canvas(slides[i], {
-                    scale: 2, 
+                    scale: 1, 
                     useCORS: true,
-                    allowTaint: true 
+                    allowTaint: true,
+                    backgroundColor: null
                 });
 
+                // Restauramos tamaño
+                slides[i].style.width = originalWidth;
+                slides[i].style.height = originalHeight;
+
                 const imgData = canvas.toDataURL('image/png');
-                if (i > 0) doc.addPage([500, 500]);
-                doc.addImage(imgData, 'PNG', 0, 0, 500, 500);
+                if (i > 0) doc.addPage([1080, 1080]);
+                doc.addImage(imgData, 'PNG', 0, 0, 1080, 1080);
             }
 
             doc.save('carrusel-swipestudio.pdf');
@@ -241,5 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    renderSlides("");
+    // Inicializar
+    renderSlides();
 });
