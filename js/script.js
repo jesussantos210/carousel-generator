@@ -265,50 +265,73 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // ---------------------------------------------------------
-    // DESCARGAR PDF 
+// ---------------------------------------------------------
+    // DESCARGAR PDF (VERSIÓN BLINDADA Y AUTÓNOMA)
     // ---------------------------------------------------------
     if(downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
             
             // 1. SEGURIDAD
-            if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
-                alert("⭐ Estás usando un Diseño Premium.\n\nPara descargar este carrusel sin la marca de agua, introduce tu código PRO.");
+            if (typeof PREMIUM_THEMES !== 'undefined' && PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                alert("⭐ Estás usando un Diseño Premium.\n\nIntroduce tu código PRO para descargar.");
                 if(promoCodeArea) promoCodeArea.style.display = 'flex';
                 return;
             }
 
             const btnOriginalText = downloadBtn.innerText;
-            downloadBtn.innerText = "Procesando...";
-
-            const targetW = FORMAT_DIMENSIONS[currentFormat].width;
-            const targetH = FORMAT_DIMENSIONS[currentFormat].height;
+            downloadBtn.innerText = "Calculando medidas...";
             
+            // 2. LEER FORMATO DIRECTAMENTE DEL HTML (¡Más seguro!)
+            // Así evitamos que la variable se quede "pegada" en el valor anterior
+            const selectElement = document.getElementById('formatSelect');
+            const formatoActual = selectElement ? selectElement.value : 'square';
+
+            // 3. DICCIONARIO DE MEDIDAS (Local para evitar errores de lectura)
+            const MEDIDAS = {
+                square:    { w: 1080, h: 1080 },
+                portrait:  { w: 1080, h: 1350 },
+                story:     { w: 1080, h: 1920 },
+                landscape: { w: 1920, h: 1080 }
+            };
+
+            const targetW = MEDIDAS[formatoActual].w;
+            const targetH = MEDIDAS[formatoActual].h;
+
+            console.log(`Generando PDF: ${formatoActual} (${targetW}x${targetH})`); // Para depurar
+
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [targetW, targetH] });
+            
+            // 4. CREAR PDF CON LAS MEDIDAS EXACTAS
+            const doc = new jsPDF({ 
+                orientation: targetW > targetH ? 'landscape' : 'portrait', 
+                unit: 'px', 
+                format: [targetW, targetH] // <--- ¡AQUÍ FORZAMOS EL TAMAÑO!
+            });
+
             const slides = document.querySelectorAll('.carousel-slide');
 
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
 
+                // Factor de Zoom = Medida Objetivo / Medida en Pantalla (500px)
                 const scaleFactor = targetW / slide.offsetWidth;
 
                 const canvas = await html2canvas(slide, {
                     scale: scaleFactor, 
-                    useCORS: true,      
+                    useCORS: true,
                     allowTaint: true,
-                    backgroundColor: null, 
+                    backgroundColor: null,
                     logging: false
                 });
 
                 const imgData = canvas.toDataURL('image/png');
+                
                 if (i > 0) doc.addPage([targetW, targetH]);
-
-                // Pegamos la foto ocupando todo el PDF (0,0 -> targetW,targetH)
                 doc.addImage(imgData, 'PNG', 0, 0, targetW, targetH);
             }
 
-            doc.save('carrusel-swipestudio.pdf');
+            // Nombre del archivo dinámico
+            doc.save(`swipestudio-${formatoActual}.pdf`);
             downloadBtn.innerText = btnOriginalText;
         });
     }
