@@ -328,3 +328,20 @@ input[type="text"], select {
 .premium-mode .lock-icon {
     display: none;
 }
+
+/* --- FORMATO DE VISTA PREVIA --- */
+.carousel-slide.format-square {
+    height: 500px;
+}
+
+.carousel-slide.format-portrait {
+    height: 625px;
+}
+
+.carousel-slide.format-story {
+    height: 889px;
+}
+
+.carousel-slide.format-landscape {
+    height: 281px;
+}

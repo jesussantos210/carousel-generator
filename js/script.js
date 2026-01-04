@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeBtns = document.querySelectorAll('.theme-btn');
     const logoInput = document.getElementById('logoInput');
     const fontSelect = document.getElementById('fontSelect');
+    const formatSelect = document.getElementById('formatSelect');
 
     // Referencias de Monetización
     const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
@@ -23,12 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
     let slidesState = []; // Faltaba inicializar esto
+    let currentFormat = "square"; // Nuevo: Formato de diapositiva
+
+    // Medidas para diferentes formatos
+    const FORMAT_DIMENSIONS = {
+        square: { width: 1080, height: 1080 },
+        portrait: { width: 1080, height: 1350 },
+        story: { width: 1080, height: 1920 },
+        landscape: { width: 1920, height: 1080 }
+    };
 
     // --- LISTA DE TEMAS DE PAGO ---
-    // Nota: Asegúrate que estos nombres coinciden con tu CSS (.theme-cyber, .theme-luxury)
+    
     const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury']; 
 
-    // 3. VERIFICACIÓN INTELIGENTE DE PREMIUM
+    // VERIFICACIÓN INTELIGENTE DE PREMIUM
     const codigoGuardado = localStorage.getItem('userPromoCode');
     
     // Verificamos si el código guardado existe en la lista cargada desde codes.js
@@ -70,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const slide = document.createElement('div');
             
             const premiumClass = window.isPremium ? 'premium-mode' : '';
-            slide.className = `carousel-slide ${currentTheme} ${premiumClass}`;
+            slide.className = `carousel-slide ${currentTheme} ${premiumClass} format-${currentFormat}`;
 
             // --- A. DEFINIR EL TEXTO (Esto faltaba y rompía el script) ---
             // Creamos el HTML del texto principal
@@ -138,7 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
     // EVENTOS
     // ---------------------------------------------------------
-    
+
+    if(formatSelect) {
+        formatSelect.addEventListener('change', (e) => {
+            currentFormat = e.target.value;
+            renderSlides();
+        });
+    }
+
     if(textInput) textInput.addEventListener('input', (e) => renderSlides(e.target.value));
 
     if(authorInput) {
@@ -245,41 +262,39 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 1. SEGURIDAD
             if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
-                alert("⭐ Estás usando un Diseño Premium.\n\nPara descargar este carrusel sin la marca de agua y en alta calidad, por favor introduce tu código PRO.");
+                alert("⭐ Estás usando un Diseño Premium.\n\nPara descargar este carrusel sin la marca de agua, introduce tu código PRO.");
                 if(promoCodeArea) promoCodeArea.style.display = 'flex';
                 return;
             }
 
             const btnOriginalText = downloadBtn.innerText;
             downloadBtn.innerText = "Procesando...";
+
+            const targetW = FORMAT_DIMENSIONS[currentFormat].width;
+            const targetH = FORMAT_DIMENSIONS[currentFormat].height;
             
             const { jsPDF } = window.jspdf;
-            // Configuramos el PDF para que sea cuadrado perfecto (1080x1080)
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [1080, 1080] });
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'px', format: [targetW, targetH] });
             const slides = document.querySelectorAll('.carousel-slide');
 
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
 
-                // CÁLCULO MÁGICO: ¿Cuánto zoom necesitamos para llegar a 1080px?
-                // Si tu slide mide 500px, el scale será 2.16 (500 * 2.16 = 1080)
-                const scaleFactor = 1080 / slide.offsetWidth;
+                const scaleFactor = targetW / slide.offsetWidth;
 
                 const canvas = await html2canvas(slide, {
-                    scale: scaleFactor, // <--- AQUÍ ESTÁ EL TRUCO (Hacemos Zoom, no estiramos)
-                    useCORS: true,      // Permite cargar imágenes externas (logos)
+                    scale: scaleFactor, 
+                    useCORS: true,      
                     allowTaint: true,
-                    backgroundColor: null, // Respeta transparencias o bordes redondos
+                    backgroundColor: null, 
                     logging: false
                 });
 
                 const imgData = canvas.toDataURL('image/png');
-                
-                // Si no es la primera página, añadimos una nueva hoja al PDF
-                if (i > 0) doc.addPage([1080, 1080]);
-                
-                // Pegamos la foto ocupando todo el PDF (0,0 -> 1080,1080)
-                doc.addImage(imgData, 'PNG', 0, 0, 1080, 1080);
+                if (i > 0) doc.addPage([targetW, targetH]);
+
+                // Pegamos la foto ocupando todo el PDF (0,0 -> targetW,targetH)
+                doc.addImage(imgData, 'PNG', 0, 0, targetW, targetH);
             }
 
             doc.save('carrusel-swipestudio.pdf');
