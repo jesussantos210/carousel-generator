@@ -107,11 +107,6 @@ input[type="text"], select {
     cursor: wait;
 }
 
-/* Botón Secundario (Descargar ZIP) */
-
-
-
-
 /* 4. ZONA DE MONETIZACIÓN */
 .monetization-area {
     margin-top: 20px;
@@ -466,4 +461,18 @@ input[type="text"], select {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+/* ELEMENTOS ARRASTRABLES */
+.draggable {
+    cursor: grab;
+    user-select: none;
+    position: relative;
+    z-index: 50;
+    touch-action: none;
+}
+
+.draggable:active {
+    cursor: grabbing;
+    opacity: 0.9;
 }

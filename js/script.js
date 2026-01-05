@@ -1,73 +1,80 @@
 // --- CONFIGURACIÓN DE SWIPESTUDIO ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Referencias DOM
+    // ==========================================
+    // 1. REFERENCIAS DEL DOM (HTML)
+    // ==========================================
     const textInput = document.getElementById('textInput');
     const authorInput = document.getElementById('authorInput');
     const downloadBtn = document.getElementById('downloadBtn');
+    const downloadZipBtn = document.getElementById('downloadZipBtn'); // Botón ZIP
     const previewContainer = document.getElementById('previewContainer');
     const themeBtns = document.querySelectorAll('.theme-btn');
     const logoInput = document.getElementById('logoInput');
     const fontSelect = document.getElementById('fontSelect');
-    const formatSelect = document.getElementById('formatSelect'); // Selector de formato
-    
+    const formatSelect = document.getElementById('formatSelect');
+    const sizeInput = document.getElementById('sizeInput');
+    const sizeValue = document.getElementById('sizeValue');
+
     // Referencias de Fondo Personalizado
     const bgColorInput = document.getElementById('bgColorInput');
     const bgImageInput = document.getElementById('bgImageInput');
     const resetBgBtn = document.getElementById('resetBgBtn');
 
-    // Referencias de Monetización y Texto
+    // Referencias de Monetización
     const removeWatermarkTrigger = document.getElementById('removeWatermarkTrigger');
     const promoCodeArea = document.getElementById('promoCodeArea');
     const applyCodeBtn = document.getElementById('applyCodeBtn');
     const promoInput = document.getElementById('promoInput');
     const premiumSuccessMsg = document.getElementById('premiumSuccessMsg');
-    const sizeInput = document.getElementById('sizeInput');
-    const sizeValue = document.getElementById('sizeValue');
 
-    // 2. Variables de estado
+    // ==========================================
+    // 2. VARIABLES DE ESTADO
+    // ==========================================
     let globalAuthor = "@miusuario";
     let currentTheme = "theme-classic"; 
     let globalLogoUrl = ""; 
     let currentFont = "font-inter";
-    let slidesState = []; 
+    let slidesState = []; // Aquí guardamos las posiciones del Drag & Drop
     let currentFormat = "square"; 
     let currentFontSize = 24; 
+    
+    // Variables de Fondo
     let customBgColor = ""; 
-    let customBgImage = ""; // <--- CORREGIDO (Antes decía letcustomBgImage)
+    let customBgImage = ""; 
 
-    // Medidas para diferentes formatos (Referencia para JS)
+    // Medidas para PDF y ZIP
     const FORMAT_DIMENSIONS = {
-        square:    { width: 1080, height: 1080 },
-        portrait:  { width: 1080, height: 1350 },
-        story:     { width: 1080, height: 1920 },
-        landscape: { width: 1920, height: 1080 }
+        square:    { w: 1080, h: 1080 },
+        portrait:  { w: 1080, h: 1350 },
+        story:     { w: 1080, h: 1920 },
+        landscape: { w: 1920, h: 1080 }
     };
 
-    // --- LISTA DE TEMAS DE PAGO ---
+    // Temas que requieren pago
     const PREMIUM_THEMES = ['theme-cyberpunk', 'theme-luxury']; 
 
-    // VERIFICACIÓN INTELIGENTE DE PREMIUM
+    // ==========================================
+    // 3. LÓGICA PREMIUM (Monetización)
+    // ==========================================
     const codigoGuardado = localStorage.getItem('userPromoCode');
     
-    // Verificamos si el código guardado existe en la lista cargada desde codes.js
     if (codigoGuardado && typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoGuardado)) {
         window.isPremium = true;
     } else {
         window.isPremium = false;
     }
 
-    // Si ya es premium al entrar, aplicamos cambios visuales
-   if (window.isPremium) {
+    if (window.isPremium) {
         document.body.classList.add('premium-mode');
         if (premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
         if (removeWatermarkTrigger) removeWatermarkTrigger.style.display = 'none';
         if (promoCodeArea) promoCodeArea.style.display = 'none';
     }
 
-    // ---------------------------------------------------------
-    // FUNCIÓN PRINCIPAL: Renderizar las diapositivas
-    // ---------------------------------------------------------
+    // ==========================================
+    // 4. FUNCIÓN PRINCIPAL: RENDERIZAR
+    // ==========================================
     function renderSlides(text = textInput.value) { 
         previewContainer.innerHTML = '';
         
@@ -75,106 +82,131 @@ document.addEventListener('DOMContentLoaded', () => {
         const paragraphs = text.split('\n\n'); 
         
         const contentToRender = (paragraphs.length === 1 && paragraphs[0] === "") 
-                                ? ["Escribe aquí tu frase genial..."] 
+                                ? ["Escribe tu texto aquí...| Arrastrame"] 
                                 : paragraphs;
 
-        let logoHTML = "";
-        if (globalLogoUrl !== "") {
-            logoHTML = `<img src="${globalLogoUrl}" class="slide-logo" alt="Logo">`;
-        }
-        
-        contentToRender.forEach((paragraph, index) => {
+        contentToRender.forEach((paragraph, slideIndex) => {
             const slide = document.createElement('div');
             
+           // 1. Clases y Tema
             const premiumClass = window.isPremium ? 'premium-mode' : '';
-            // Aplicamos clase de tema y de formato
             slide.className = `carousel-slide ${currentTheme} ${premiumClass} format-${currentFormat}`;
 
-// --- APLICAR FONDO (VERSIÓN FUERZA BRUTA) ---
-            
-            // 1. Reseteo agresivo
+            // 2. FONDO
             slide.style.removeProperty('background-image');
             slide.style.removeProperty('background-color');
             slide.style.background = ""; 
 
-            // 2. Aplicar con prioridad máxima
             if (customBgImage) {
-                // Si hay imagen, forzamos que se muestre y cubra todo
                 slide.style.setProperty('background-image', `url(${customBgImage})`, 'important');
                 slide.style.setProperty('background-size', 'cover', 'important');
                 slide.style.setProperty('background-position', 'center', 'important');
                 slide.style.setProperty('background-repeat', 'no-repeat', 'important');
             } 
             else if (customBgColor) {
-                // Si hay color, forzamos el color y quitamos cualquier imagen del tema
                 slide.style.setProperty('background-color', customBgColor, 'important');
                 slide.style.setProperty('background-image', 'none', 'important');
             }
-            // ---------------------------------------------------------
 
-            // --- A. DEFINIR EL TEXTO ---
-            const textHtml1 = `
-                <p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px;">
-                    ${paragraph}
-                </p>
-            `;
+            // 3. LOGO (Recuperar posición)
+            if (!slidesState[slideIndex]) slidesState[slideIndex] = {};
+            // Aseguramos que exista el objeto del logo
+            if (!slidesState[slideIndex]['logo']) slidesState[slideIndex]['logo'] = {x:0, y:0};
             
-            const textHtml2 = ""; 
+            const logoPos = slidesState[slideIndex]['logo'];
+            
+            let logoRenderHTML = "";
+            if (globalLogoUrl !== "") {
+                logoRenderHTML = `
+                    <div id="drag-logo-${slideIndex}" class="draggable" style="position: absolute; top: 20px; left: 20px; z-index: 60; transform: translate(${logoPos.x}px, ${logoPos.y}px);">
+                        <img src="${globalLogoUrl}" class="slide-logo" alt="Logo" style="pointer-events: none; max-width: 80px;"> 
+                    </div>
+                `;
+            }
 
-            // --- B. VISTA PREVIA (CANDADO) ---
+            // 4. GENERAR CAJAS DE TEXTO (Aquí está la magia del | )
+            const textParts = paragraph.split('|'); // Separamos por la barra vertical
+            let allTextHTML = "";
+
+            textParts.forEach((part, partIndex) => {
+                const cleanText = part.trim(); // Quitar espacios sobrantes
+                const partKey = `text-${partIndex}`; // Clave única: text-0, text-1...
+
+                // Recuperar posición de ESTA parte específica
+                if (!slidesState[slideIndex][partKey]) slidesState[slideIndex][partKey] = {x:0, y:0};
+                const pos = slidesState[slideIndex][partKey];
+
+                // Crear HTML de esta caja
+                // Le damos un poco de margen top automático para que no salgan pegadas una encima de otra
+                const initialTop = partIndex * 60; // Separación vertical inicial
+
+                allTextHTML += `
+                    <div id="drag-text-${slideIndex}-${partIndex}" class="draggable" 
+                         style="
+                            transform: translate(${pos.x}px, ${pos.y}px); 
+                            width: 100%; 
+                            display: flex; 
+                            justify-content: center; 
+                            position: absolute; 
+                            top: calc(40% + ${initialTop}px); /* Centrado inicial escalonado */
+                            left: 0;
+                            padding: 10px;
+                         ">
+                        <p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px; margin: 0; text-align: center;">
+                            ${cleanText}
+                        </p>
+                    </div>
+                `;
+            });
+
+            // 5. OVERLAY PREMIUM
             let previewOverlay = "";
-
             if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
                 previewOverlay = `
-                    <div style="
-                        position: absolute; 
-                        top: 0; left: 0; right: 0; bottom: 0;
-                        background: rgba(0,0,0,0.85); 
-                        display: flex; 
-                        flex-direction: column;
-                        justify-content: center; 
-                        align-items: center; 
-                        z-index: 100;
-                        border-radius: 8px;
-                        pointer-events: none;
-                    ">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; border-radius: 8px; pointer-events: none;">
                         <span style="font-size: 60px;">🔒</span>
-                        <span style="color: white; font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
-                            Premium
-                        </span>
-                        <span style="color: #ddd; font-size: 14px; margin-top: 10px;">
-                            Usa tu código para desbloquear
-                        </span>
+                        <span style="color: white; font-size: 24px; font-weight: bold;">PREMIUM</span>
                     </div>
                 `;
             }
             
-            // --- C. INYECTAR HTML FINAL ---
+            // 6. INYECTAR HTML
+            // Nota: Quitamos el flex center del padre para que el position absolute funcione libremente
             slide.innerHTML = `
-                <div class="slide-content">
+                <div class="slide-content" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
                     ${previewOverlay} 
-                    ${logoHTML}       
-                    ${textHtml1}      
-                    ${textHtml2}      
+                    ${logoRenderHTML}  
+                    ${allTextHTML}      
                 </div>
 
                 <div class="slide-footer">
                     <span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span>
-
                     <span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px;">
                         ⚡ Creado con SwipeStudio
                     </span>
-
-                    <span class="${currentFont}" style="font-size: 0.8rem">${index + 1}/${contentToRender.length}</span>
+                    <span class="${currentFont}" style="font-size: 0.8rem">${slideIndex + 1}/${contentToRender.length}</span>
                 </div>
             `;
+            
             previewContainer.appendChild(slide);
+
+            // 7. ACTIVAR ARRASTRE PARA TODO
+            // Logo
+            const logoElement = slide.querySelector(`#drag-logo-${slideIndex}`);
+            if(logoElement) makeDraggable(logoElement, slideIndex, 'logo');
+
+            // Textos (Bucle para activar cada parte)
+            textParts.forEach((_, partIndex) => {
+                const textEl = slide.querySelector(`#drag-text-${slideIndex}-${partIndex}`);
+                if(textEl) makeDraggable(textEl, slideIndex, `text-${partIndex}`);
+            });
+
         });
     }
 
-    // ---------------------------------------------------------
-    // EVENTOS
-    // ---------------------------------------------------------
+    // ==========================================
+    // 5. EVENT LISTENERS (INTERACCIÓN)
+    // ==========================================
 
     if(formatSelect) {
         formatSelect.addEventListener('change', (e) => {
@@ -200,11 +232,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- EVENTOS DE FONDO ---
+    if(fontSelect) {
+        fontSelect.addEventListener('change', (e) => {
+            currentFont = e.target.value;
+            renderSlides();
+        });
+    }
+
+    // --- FONDOS PERSONALIZADOS ---
     if (bgColorInput) {
         bgColorInput.addEventListener('input', (e) => {
             customBgColor = e.target.value;
-            customBgImage = ""; // Limpiar imagen si se selecciona color
+            customBgImage = ""; 
             if(bgImageInput) bgImageInput.value = "";
             renderSlides();
         });
@@ -217,8 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     customBgImage = event.target.result;
-                    customBgColor = ""; // Limpiar color si se selecciona imagen
-                    if(bgColorInput) bgColorInput.value = ""; // Reset visual (opcional)
+                    customBgColor = ""; 
+                    if(bgColorInput) bgColorInput.value = ""; 
                     renderSlides();
                 };
                 reader.readAsDataURL(file);
@@ -236,33 +275,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Botones de temas
+    // --- CAMBIO DE TEMA ---
     themeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             currentTheme = btn.getAttribute('data-theme');
-
-            const isPremiumTheme = btn.getAttribute('data-premium') === "true";
             
-            if (isPremiumTheme && !window.isPremium) {
-                console.log("Modo Vista Previa Activado"); 
-            }
-
-            // Reset de fondos personalizados al cambiar tema (Mejora UX)
+            // Reset de fondos personalizados para ver el tema nuevo
             customBgColor = "";
             customBgImage = "";
             if(bgColorInput) bgColorInput.value = "#ffffff";
             if(bgImageInput) bgImageInput.value = "";
 
-            slidesState = [];
+            // Limpiamos posiciones guardadas al cambiar tema (opcional, pero recomendado)
+            slidesState = []; 
             renderSlides();
         });
     });
 
-    // Subir Logo (CON CANDADO)
+    // --- SUBIDA DE LOGO ---
     if(logoInput) {
         logoInput.addEventListener('change', (e) => {
             if (!window.isPremium) {
-                alert("🔒 La carga de Logos es una función exclusiva para usuarios PRO.\n\nIntroduce tu código VIP para desbloquearla.");
+                alert("🔒 La carga de Logos es una función exclusiva para usuarios PRO.");
                 logoInput.value = ""; 
                 if(promoCodeArea) promoCodeArea.style.display = 'flex';
                 return;
@@ -280,90 +314,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if(fontSelect) {
-        fontSelect.addEventListener('change', (e) => {
-            currentFont = e.target.value;
-            renderSlides();
-        });
-    }
-
-    // ---------------------------------------------------------
-    // MONETIZACIÓN
-    // ---------------------------------------------------------
-    
+    // --- MONETIZACIÓN ---
     if(removeWatermarkTrigger) {
         removeWatermarkTrigger.addEventListener('click', () => {
-            if (promoCodeArea.style.display === 'none') {
-                promoCodeArea.style.display = 'flex';
-            } else {
-                promoCodeArea.style.display = 'none';
-            }
+            promoCodeArea.style.display = (promoCodeArea.style.display === 'none') ? 'flex' : 'none';
         });
     }
 
-    // Validar el código
     if(applyCodeBtn) {
         applyCodeBtn.addEventListener('click', () => {
             const codigoIngresado = promoInput.value.trim().toUpperCase();
-
             if (typeof CODIGOS_VALIDOS !== 'undefined' && CODIGOS_VALIDOS.includes(codigoIngresado)) {
-                
-                // 1. Guardamos y Activamos
                 localStorage.setItem('userPromoCode', codigoIngresado);
                 window.isPremium = true; 
                 document.body.classList.add('premium-mode');
-                
-                // 2. Refrescamos la vista
                 renderSlides();
-                
-                // Feedback visual
                 promoCodeArea.style.display = 'none';
-                removeWatermarkTrigger.style.display = 'none';
                 if(premiumSuccessMsg) premiumSuccessMsg.style.display = 'block';
-                
-                alert("¡Código válido! Bienvenido al plan PRO.");
+                alert("¡Bienvenido al plan PRO!");
             } else {
-                alert("Código no válido o no encontrado en la lista.");
+                alert("Código no válido.");
             }
         });
     }
     
-    // ---------------------------------------------------------
-    // DESCARGAR PDF (VERSIÓN BLINDADA Y AUTÓNOMA)
-    // ---------------------------------------------------------
+    // ==========================================
+    // 6. DESCARGAS (PDF Y ZIP)
+    // ==========================================
+
+    // --- DESCARGAR PDF ---
     if(downloadBtn) {
         downloadBtn.addEventListener('click', async () => {
-            
-            // 1. SEGURIDAD
-            if (typeof PREMIUM_THEMES !== 'undefined' && PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
-                alert("⭐ Estás usando un Diseño Premium.\n\nIntroduce tu código PRO para descargar.");
+            if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                alert("⭐ Tema Premium. Introduce tu código PRO.");
                 if(promoCodeArea) promoCodeArea.style.display = 'flex';
                 return;
             }
 
             const btnOriginalText = downloadBtn.innerText;
-            downloadBtn.innerText = "Calculando medidas...";
+            downloadBtn.innerText = "Calculando...";
             
-            // 2. LEER FORMATO DIRECTAMENTE DEL HTML (¡Más seguro!)
-            const selectElement = document.getElementById('formatSelect');
-            const formatoActual = selectElement ? selectElement.value : 'square';
-
-            // 3. DICCIONARIO DE MEDIDAS (Local para evitar errores de lectura)
-            const MEDIDAS = {
-                square:    { w: 1080, h: 1080 },
-                portrait:  { w: 1080, h: 1350 },
-                story:     { w: 1080, h: 1920 },
-                landscape: { w: 1920, h: 1080 }
-            };
-
-            const targetW = MEDIDAS[formatoActual].w;
-            const targetH = MEDIDAS[formatoActual].h;
-
-            console.log(`Generando PDF: ${formatoActual} (${targetW}x${targetH})`); 
+            const formatoActual = formatSelect ? formatSelect.value : 'square';
+            const targetW = FORMAT_DIMENSIONS[formatoActual].w;
+            const targetH = FORMAT_DIMENSIONS[formatoActual].h;
 
             const { jsPDF } = window.jspdf;
-            
-            // 4. CREAR PDF CON LAS MEDIDAS EXACTAS
             const doc = new jsPDF({ 
                 orientation: targetW > targetH ? 'landscape' : 'portrait', 
                 unit: 'px', 
@@ -374,8 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
-
-                // Factor de Zoom
                 const scaleFactor = targetW / slide.offsetWidth;
 
                 const canvas = await html2canvas(slide, {
@@ -387,7 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const imgData = canvas.toDataURL('image/png');
-                
                 if (i > 0) doc.addPage([targetW, targetH]);
                 doc.addImage(imgData, 'PNG', 0, 0, targetW, targetH);
             }
@@ -397,69 +389,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Inicializar
-    renderSlides();
-
-    // ---------------------------------------------------------
-    // DESCARGAR IMÁGENES SUELTAS (ZIP)
-    // ---------------------------------------------------------
-    const downloadZipBtn = document.getElementById('downloadZipBtn');
-
+    // --- DESCARGAR ZIP ---
     if (downloadZipBtn) {
         downloadZipBtn.addEventListener('click', async () => {
-            
-            // 1. Verificación Premium (Reutilizamos lógica existente)
-            if (typeof PREMIUM_THEMES !== 'undefined' && PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
-                alert("⭐ Estás usando un Diseño Premium.\n\nIntroduce tu código PRO para descargar.");
-                if(promoCodeArea) promoCodeArea.style.display = 'flex'; // Único estilo necesario por lógica de UI
+            if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                alert("⭐ Tema Premium. Introduce tu código PRO.");
+                if(promoCodeArea) promoCodeArea.style.display = 'flex';
                 return;
             }
 
             const btnOriginalText = downloadZipBtn.innerText;
             downloadZipBtn.innerText = "Procesando...";
             
-            // 2. Inicializar ZIP
             const zip = new JSZip();
             const slides = document.querySelectorAll('.carousel-slide');
             
-            // 3. Obtener medidas según formato seleccionado
-            const selectElement = document.getElementById('formatSelect');
-            const formatoActual = selectElement ? selectElement.value : 'square';
-            
-            const MEDIDAS_ZIP = {
-                square:    { w: 1080 },
-                portrait:  { w: 1080 },
-                story:     { w: 1080 },
-                landscape: { w: 1920 }
-            };
-            const targetW = MEDIDAS_ZIP[formatoActual].w;
+            const formatoActual = formatSelect ? formatSelect.value : 'square';
+            const targetW = FORMAT_DIMENSIONS[formatoActual].w;
 
-            // 4. Bucle de generación
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
-                
-                // Feedback visual en el botón
                 downloadZipBtn.innerText = `Generando ${i + 1}/${slides.length}...`;
-
-                // Calcular escala para HD
+                
                 const scaleFactor = targetW / slide.offsetWidth;
-
                 const canvas = await html2canvas(slide, {
                     scale: scaleFactor,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: null,
-                    logging: false
+                    backgroundColor: null
                 });
 
-                // Convertir Canvas a Blob (Archivo binario)
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                
-                // Agregar al paquete ZIP
                 zip.file(`slide-${i + 1}.png`, blob);
             }
 
-            // 5. Generar y descargar archivo final
             downloadZipBtn.innerText = "Empaquetando...";
             
             zip.generateAsync({type:"blob"}).then(function(content) {
@@ -467,9 +430,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href = URL.createObjectURL(content);
                 link.download = `swipestudio-pack.zip`;
                 link.click();
-                
                 downloadZipBtn.innerText = btnOriginalText;
             });
         });
     }
-});
+
+    // ==========================================
+    // 7. FUNCIÓN DRAG & DROP
+    // ==========================================
+    function makeDraggable(element, slideIndex, type) {
+        let isDragging = false;
+        let startX, startY;
+        
+        element.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            element.style.cursor = 'grabbing';
+            e.stopPropagation(); // Evitar conflictos
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            if (!slidesState[slideIndex]) slidesState[slideIndex] = {};
+            if (!slidesState[slideIndex][type]) slidesState[slideIndex][type] = { x: 0, y: 0 };
+
+            slidesState[slideIndex][type].x += deltaX;
+            slidesState[slideIndex][type].y += deltaY;
+
+            element.style.transform = `translate(${slidesState[slideIndex][type].x}px, ${slidesState[slideIndex][type].y}px)`;
+
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                element.style.cursor = 'grab';
+            }
+        });
+    }
+
+    // INICIALIZACIÓN
+    renderSlides();
+
+}); // FIN DEL DOMContentLoaded
