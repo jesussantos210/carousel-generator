@@ -399,4 +399,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar
     renderSlides();
+
+    // ---------------------------------------------------------
+    // DESCARGAR IMÁGENES SUELTAS (ZIP)
+    // ---------------------------------------------------------
+    const downloadZipBtn = document.getElementById('downloadZipBtn');
+
+    if (downloadZipBtn) {
+        downloadZipBtn.addEventListener('click', async () => {
+            
+            // 1. Verificación Premium (Reutilizamos lógica existente)
+            if (typeof PREMIUM_THEMES !== 'undefined' && PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
+                alert("⭐ Estás usando un Diseño Premium.\n\nIntroduce tu código PRO para descargar.");
+                if(promoCodeArea) promoCodeArea.style.display = 'flex'; // Único estilo necesario por lógica de UI
+                return;
+            }
+
+            const btnOriginalText = downloadZipBtn.innerText;
+            downloadZipBtn.innerText = "Procesando...";
+            
+            // 2. Inicializar ZIP
+            const zip = new JSZip();
+            const slides = document.querySelectorAll('.carousel-slide');
+            
+            // 3. Obtener medidas según formato seleccionado
+            const selectElement = document.getElementById('formatSelect');
+            const formatoActual = selectElement ? selectElement.value : 'square';
+            
+            const MEDIDAS_ZIP = {
+                square:    { w: 1080 },
+                portrait:  { w: 1080 },
+                story:     { w: 1080 },
+                landscape: { w: 1920 }
+            };
+            const targetW = MEDIDAS_ZIP[formatoActual].w;
+
+            // 4. Bucle de generación
+            for (let i = 0; i < slides.length; i++) {
+                const slide = slides[i];
+                
+                // Feedback visual en el botón
+                downloadZipBtn.innerText = `Generando ${i + 1}/${slides.length}...`;
+
+                // Calcular escala para HD
+                const scaleFactor = targetW / slide.offsetWidth;
+
+                const canvas = await html2canvas(slide, {
+                    scale: scaleFactor,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+
+                // Convertir Canvas a Blob (Archivo binario)
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                
+                // Agregar al paquete ZIP
+                zip.file(`slide-${i + 1}.png`, blob);
+            }
+
+            // 5. Generar y descargar archivo final
+            downloadZipBtn.innerText = "Empaquetando...";
+            
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = `swipestudio-pack.zip`;
+                link.click();
+                
+                downloadZipBtn.innerText = btnOriginalText;
+            });
+        });
+    }
 });

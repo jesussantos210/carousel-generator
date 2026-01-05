@@ -66,22 +66,51 @@ input[type="text"], select {
 }
 
 /* Botón Principal (Descargar) */
-.btn-primary {
-    background-color: var(--primary);
-    color: white;
-    border: none;
+.dowload-action {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.btn-primary, .btn-secondary {
+    flex: 1;
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1rem;
-    margin-top: auto;
+    border: none;
     transition: background-color 0.2s;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #0f0f0f;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #2c3e50;
+    color: white;
 }
 
 .btn-primary:hover {
     background-color: #1d4ed8;
 }
+
+.btn-secondary:hover {
+    background-color: #34495e;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Botón Secundario (Descargar ZIP) */
+
+
+
 
 /* 4. ZONA DE MONETIZACIÓN */
 .monetization-area {
