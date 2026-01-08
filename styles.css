@@ -1,417 +1,200 @@
-/* 1. IMPORTACIÓN DE FUENTES */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto+Mono:wght@500&display=swap');
+/* =========================================
+   1. CONFIGURACIÓN BASE & FUENTES
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 2. VARIABLES Y BASE */
 :root {
-    --primary: #2563eb;
-    --dark: #1e293b;
-    --light: #f8fafc;
+    --primary: #2563eb;       /* Azul Vibrante */
+    --primary-hover: #1d4ed8;
+    --secondary: #1e293b;     /* Gris Oscuro (Botón ZIP) */
+    --bg-app: #f1f5f9;        /* Fondo gris muy claro */
+    --bg-panel: #ffffff;      /* Blanco puro */
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    background-color: var(--light);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-main);
     height: 100vh;
+    overflow: hidden; /* Evita scroll doble */
+}
+
+/* =========================================
+   2. LAYOUT PRINCIPAL (Dos Columnas)
+   ========================================= */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* --- BARRA LATERAL (CONTROLES) --- */
+.controls {
+    width: 380px; /* Un poco más ancho para comodidad */
+    background: var(--bg-panel);
+    padding: 25px;
+    overflow-y: auto; /* Scroll solo en la barra */
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+    z-index: 10;
+}
+
+.controls h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+/* --- ÁREA DE VISTA PREVIA --- */
+.preview-area {
+    flex-grow: 1;
+    background-color: var(--bg-app);
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px); /* Patrón de puntos */
+    background-size: 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
     overflow: hidden;
 }
 
-.app-container {
-    display: flex;
-    height: 100%;
+/* Contenedor del Slide (Centrado y con Sombra) */
+.slides-wrapper {
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    border-radius: 4px; /* Ligero borde como foto real */
+    transition: all 0.3s ease;
 }
 
-/* 3. PANEL IZQUIERDO (CONTROLES) */
-.controls {
-    width: 350px;
-    background: white;
-    padding: 2rem;
-    border-right: 1px solid #ddd;
+/* =========================================
+   3. INPUTS Y FORMULARIOS MODERNOS
+   ========================================= */
+.input-group, .control-group {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-    overflow-y: auto;
-}
-
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    gap: 8px;
 }
 
 label {
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: #333;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estilo unificado para inputs, selects y textareas */
+input[type="text"], 
+textarea, 
+select,
+.file-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    transition: all 0.2s;
+    outline: none;
+}
+
+input[type="text"]:focus, 
+textarea:focus, 
+select:focus {
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
     resize: vertical;
-    font-family: inherit;
-    box-sizing: border-box;
+    min-height: 80px;
 }
 
-input[type="text"], select {
+/* Range Slider (Barra de tamaño) */
+.range-slider {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
+    height: 6px;
+    background: var(--border);
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
 }
-
-/* Botón Principal (Descargar) */
-.dowload-action {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    width: 100%;
-}
-
-.btn-primary, .btn-secondary {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    transition: background-color 0.2s;
-    font-size: 1rem;
-}
-
-.btn-primary {
-    background-color: #0f0f0f;
-    color: white;
-}
-
-.btn-secondary {
-    background-color: #2c3e50;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #1d4ed8;
-}
-
-.btn-secondary:hover {
-    background-color: #34495e;
-}
-
-.btn-secondary:disabled {
-    opacity: 0.7;
-    cursor: wait;
-}
-
-/* 4. ZONA DE MONETIZACIÓN */
-.monetization-area {
-    margin-top: 20px;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
-    text-align: center;
-}
-
-/* Botón de Café (Amarillo) */
-.btn-coffee {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #FFDD00;
-    color: #000;
-    text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    transition: transform 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.btn-coffee:hover {
-    transform: translateY(-2px);
-    background-color: #ffe600;
-}
-
-/* Enlace Premium */
-.premium-link {
-    color: #666;
-    font-size: 0.9rem;
-    cursor: pointer;
-    text-decoration: underline;
-    margin: 0;
-}
-.premium-link:hover {
-    color: #2563eb;
-}
-
-/* Input de Código */
-.promo-code-area {
-    display: flex;
-    gap: 5px;
-    margin-top: 10px;
-}
-.promo-code-area input {
-    font-size: 0.8rem;
-    padding: 5px;
-    flex: 1;
-}
-.promo-code-area button {
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 0 10px;
-}
-
-/* Mensaje de Éxito */
-.success-message {
-    color: #16a34a;
-    font-weight: bold;
-    margin-top: 8px;
-    font-size: 0.9rem;
-    display: none;
-}
-
-/* 5. PANEL DERECHO (VISTA PREVIA) */
-.preview-area {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    background-color: #e2e8f0;
-    overflow: hidden;
-    min-width: 0;
-}
-
-.slides-wrapper {
-    display: flex;
-    gap: 20px;
-    padding: 20px 40px;
-    width: 100%;
-    overflow-x: auto;
-    box-sizing: border-box;
-    justify-content: flex-start;
-    scroll-behavior: smooth;
-}
-
-/* 6. DIAPOSITIVAS (ESTILOS BASE) */
-.carousel-slide {
-    min-width: 500px;
-    height: 500px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-    position: relative;
-    border: 2px solid transparent;
-    transition: background-color 0.3s, color 0.3s, border 0.3s;
-    box-sizing: border-box;
-}
-
-.slide-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.slide-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 15px 20px;
-    font-size: 14px;
-    opacity: 0.8;
-    border-top: 1px solid rgba(255,255,255,0.3);
-    margin-top: auto;
-}
-
-.watermark {
-    font-weight: bold;
-}
-
-/* LOGO */
-.slide-logo {
-    max-height: 60px;
-    width: auto;
-    margin-bottom: 20px;
-    display: block;
-    align-self: center;
-}
-
-/* 7. TEMAS (THEMES) */
-.carousel-slide.theme-classic {
-    background-color: #4A90E2 !important;
-    color: white;
-}
-
-.carousel-slide.theme-dark {
-    background-color: #111827 !important;
-    color: #00ff9d !important;
-    border: 1px solid #374151;
-}
-
-.carousel-slide.theme-sunset {
-    background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%) !important;
-    color: #592E6F !important;
-}
-
-.carousel-slide.theme-elegant {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    border: 4px solid #000000;
-}
-
-.carousel-slide.theme-cyberpunk {
-    background-color: #0f0f0f !important;
-    color: #00f3ff !important;
-    border: 2px dashed #d946ef;
-    box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
-}
-
-.carousel-slide.theme-cyberpunk .slide-footer {
-    border-top: 1px dashed #d946ef;
-    color: #d946ef;
-}
-
-.carousel-slide.theme-coffee {
-    background: linear-gradient(to bottom, #6f4e37, #3e2723) !important;
-    color: #efebe9 !important;
-    border: 1px solid #d7ccc8;
-}
-
-.carousel-slide.theme-luxury {
-    background-color: #000000 !important;
-    color: #d4af37 !important;
-    border: 3px solid #d4af37;
-}
-
-.carousel-slide.theme-luxury .slide-logo {
-    filter: drop-shadow(0 0 5px #d4af37);
-}
-
-.carousel-slide.theme-mint {
-    background-color: #e0f2f1 !important;
-    color: #004d40 !important;
-    border: none;
-}
-/* Botones selectores de tema */
-.theme-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 5px;
-}
-.theme-btn {
-    width: 30px;
-    height: 30px;
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
     border-radius: 50%;
-    border: 2px solid #ddd;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.1s;
 }
-.theme-btn:hover {
-    transform: scale(1.1);
-    border-color: #888;
-}
-
-/* 8. FUENTES (TYPOGRAPHY) */
-.font-inter { font-family: 'Inter', sans-serif !important; }
-.font-playfair { font-family: 'Playfair Display', serif !important; }
-.font-roboto { font-family: 'Roboto Mono', monospace !important; }
-.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
-
-/* 9. MODO PREMIUM */
-.premium-mode .watermark {
-    display: none !important;
+.range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
 }
 
-/* Alineación del texto con el icono */
-.label-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.lock-icon {
-    color: #666;
-    cursor: help;
-    transition: 0.3s;
-}
-
-.label-with-icon:hover .lock-icon {
-    color: #ef4444;
-}
-
-.premium-mode .lock-icon {
-    display: none;
-}
-
-/* --- FORMATO DE VISTA PREVIA --- */
-.carousel-slide.format-square {
-    height: 500px;
-}
-
-.carousel-slide.format-portrait {
-    height: 625px;
-}
-
-.carousel-slide.format-story {
-    height: 889px;
-}
-
-.carousel-slide.format-landscape {
-    height: 281px;
-}
-
-/* --- CONTROLES DEL UI --- */
 .control-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px;
+    align-items: center;
 }
-
 #sizeValue {
+    font-size: 0.8rem;
     font-weight: bold;
-    color: #666;
-    font-size: 0.9rem;
+    background: var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
-.range-slider {
+/* =========================================
+   4. BOTONES DE TEMA (GRID)
+   ========================================= */
+.theme-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.theme-btn {
     width: 100%;
+    aspect-ratio: 1; /* Cuadrados perfectos */
+    border-radius: 50%; /* Círculos */
     cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-
-/* --- ESTILO DEL TEXTO EN EL SLIDE --- */
-.slide-text-content {
-    font-weight: bold;
-    text-align: center;
-    margin: 0;
-    width: 100%;
-    padding: 10px;
-    z-index: 10;
-    box-sizing: border-box;
-    line-height: 1.4;
-    word-break: break-word;
+.theme-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* --- CONTROLES DE FONDO --- */
+/* =========================================
+   5. CONTROLES DE FONDO
+   ========================================= */
 .bg-controls {
     display: flex;
-    gap: 10px;
     align-items: center;
-    margin-top: 5px;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
 }
 
 .bg-input-wrapper {
@@ -420,59 +203,249 @@ input[type="text"], select {
     align-items: center;
 }
 
-.flex-grow {
-    flex-grow: 1;
+.mini-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 2px;
 }
 
 .color-picker {
-    cursor: pointer;
+    width: 40px;
     height: 40px;
-    width: 50px;
     border: none;
-    padding: 0;
     background: none;
-}
-
-.mini-label {
-    font-size: 10px;
-    color: #666;
-}
-
-.file-input {
-    font-size: 11px;
-    width: 100%;
+    cursor: pointer;
 }
 
 .reset-btn {
+    background: none;
+    border: 1px solid var(--border);
     padding: 5px 10px;
-    font-size: 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
     cursor: pointer;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #f0f0f0;
+    color: #ef4444; /* Rojo suave */
 }
-
 .reset-btn:hover {
-    background: #e0e0e0;
+    background: #fee2e2;
 }
 
-/* --- FONDOS DE SLIDE --- */
+/* =========================================
+   6. BOTONES DE ACCIÓN (Descargar)
+   ========================================= */
+.btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius);
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s, filter 0.2s;
+    margin-top: 10px;
+}
+
+/* Botón PDF */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+/* Botón ZIP */
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
+}
+.btn-secondary:hover {
+    background: #334155;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   7. MONETIZACIÓN & PREMIUM
+   ========================================= */
+.monetization-area {
+    margin-top: auto; /* Empuja esto al fondo */
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-coffee {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: #FFDD00;
+    color: #000;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+.premium-link {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.promo-code-area {
+    display: flex;
+    gap: 5px;
+}
+.promo-code-area input {
+    padding: 8px;
+    font-size: 0.8rem;
+}
+.promo-code-area button {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 0 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.success-message {
+    color: #16a34a; /* Verde */
+    font-weight: bold;
+    text-align: center;
+    display: none;
+}
+
+/* =========================================
+   8. ESTILOS DE LA DIAPOSITIVA (VISUAL)
+   ========================================= */
 .carousel-slide {
+    width: 500px; /* Ancho base visualización */
+    /* La altura se controla por JS según formato */
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    
+    /* Configuración por defecto */
     background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-position: center;
 }
 
-/* ELEMENTOS ARRASTRABLES */
+.slide-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    position: relative;
+    text-align: center;
+    z-index: 10;
+}
+
+.slide-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: auto;
+    width: 100%;
+    z-index: 20;
+    /* Corrección del footer */
+    box-sizing: border-box; 
+    background: rgba(0,0,0,0.05); /* Sutil fondo oscuro para contraste */
+}
+
+/* Textos dentro del slide */
+.slide-text-content {
+    white-space: pre-wrap;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+/* Clases Draggable (Necesarias) */
 .draggable {
     cursor: grab;
     user-select: none;
-    position: relative;
+    position: relative; /* O absolute, controlado por JS */
     z-index: 50;
     touch-action: none;
 }
-
 .draggable:active {
     cursor: grabbing;
     opacity: 0.9;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+}
+
+/* --- ESTILOS DE TEMAS (CSS Básico) --- */
+.theme-classic { background: white; color: #333; }
+.theme-dark { background: #111; color: white; }
+.theme-dark .slide-footer { color: rgba(255,255,255,0.7); }
+
+.theme-sunset { 
+    background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%); 
+    color: #fff; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-elegant { 
+    background: #fdfbf7; 
+    color: #4a4a4a; 
+    border: 10px solid #2c3e50; /* Marco elegante */
+}
+
+.theme-cyberpunk {
+    background: #0f0c29;  
+    background: linear-gradient(to right, #24243e, #302b63, #0f0c29); 
+    color: #00ffea;
+    text-shadow: 0 0 5px #00ffea;
+    font-family: 'Courier New', Courier, monospace; /* Fuente retro */
+}
+
+.theme-luxury {
+    background: #000;
+    color: #d4af37; /* Dorado */
+    border: 2px solid #d4af37;
+}
+
+/* Estilo para iconos y candados */
+.lock-icon {
+    vertical-align: middle;
+    margin-left: 5px;
+    color: #f59e0b;
+}
+
+/* Responsivo para pantallas pequeñas */
+@media (max-width: 900px) {
+    .app-container {
+        flex-direction: column;
+        overflow-y: auto; /* Permitir scroll en móvil */
+    }
+    .controls {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .preview-area {
+        padding: 20px;
+        min-height: 500px;
+    }
 }
