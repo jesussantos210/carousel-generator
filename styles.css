@@ -133,9 +133,11 @@ textarea {
     background: var(--border);
     border-radius: 5px;
     outline: none;
+    appearance: none;
     -webkit-appearance: none;
 }
 .range-slider::-webkit-slider-thumb {
+    appearance: none;
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
