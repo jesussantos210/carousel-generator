@@ -1,88 +1,88 @@
 /* =========================================
-   1. CONFIGURACIÓN BASE & FUENTES
+   SWIPESTUDIO - DISEÑO "DARK PRO" (VERSIÓN FINAL)
    ========================================= */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* 1. CONFIGURACIÓN BASE */
 :root {
-    --primary: #2563eb;       /* Azul Vibrante */
-    --primary-hover: #1d4ed8;
-    --secondary: #1e293b;     /* Gris Oscuro (Botón ZIP) */
-    --bg-app: #f1f5f9;        /* Fondo gris muy claro */
-    --bg-panel: #ffffff;      /* Blanco puro */
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --radius: 12px;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --bg-body: #0f1115;       /* Fondo Canvas */
+    --bg-panel: #1a1d23;      /* Panel Lateral */
+    --border: #2f333c;        /* Bordes sutiles */
+    --primary: #3b82f6;       /* Azul Principal */
+    --primary-hover: #2563eb;
+    --text-main: #e2e8f0;     /* Texto Blanco Suave */
+    --text-muted: #94a3b8;    /* Texto Gris */
+    --input-bg: #262a33;      /* Fondo Inputs */
+    --radius: 8px;            /* Radio de borde */
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-app);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-body);
     color: var(--text-main);
     height: 100vh;
-    overflow: hidden; /* Evita scroll doble */
+    overflow: hidden;
 }
 
-/* =========================================
-   2. LAYOUT PRINCIPAL (Dos Columnas)
-   ========================================= */
+/* 2. LAYOUT PRINCIPAL */
 .app-container {
     display: flex;
     height: 100vh;
     width: 100%;
 }
 
-/* --- BARRA LATERAL (CONTROLES) --- */
+/* --- BARRA LATERAL --- */
 .controls {
-    width: 380px; /* Un poco más ancho para comodidad */
+    width: 360px;
     background: var(--bg-panel);
-    padding: 25px;
-    overflow-y: auto; /* Scroll solo en la barra */
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    padding: 24px;
     gap: 20px;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.03);
-    z-index: 10;
+    overflow-y: auto;
+    z-index: 20;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.2);
 }
+
+/* Scrollbar elegante */
+.controls::-webkit-scrollbar { width: 6px; }
+.controls::-webkit-scrollbar-track { background: transparent; }
+.controls::-webkit-scrollbar-thumb { background: #3f4451; border-radius: 3px; }
 
 .controls h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-main);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
     margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
 }
 
-/* --- ÁREA DE VISTA PREVIA --- */
+/* --- ÁREA DE VISTA PREVIA (CANVAS) --- */
 .preview-area {
     flex-grow: 1;
-    background-color: var(--bg-app);
-    background-image: radial-gradient(#cbd5e1 1px, transparent 1px); /* Patrón de puntos */
-    background-size: 20px 20px;
+    background-color: #0f1115;
+    /* Patrón de malla técnica */
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 40px;
-    overflow: hidden;
+    position: relative;
 }
 
-/* Contenedor del Slide (Centrado y con Sombra) */
 .slides-wrapper {
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    border-radius: 4px; /* Ligero borde como foto real */
-    transition: all 0.3s ease;
+    box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); 
+    transition: transform 0.3s ease;
 }
 
-/* =========================================
-   3. INPUTS Y FORMULARIOS MODERNOS
-   ========================================= */
+/* 3. INPUTS Y FORMULARIOS */
 .input-group, .control-group {
     display: flex;
     flex-direction: column;
@@ -90,275 +90,212 @@ body {
 }
 
 label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-/* Estilo unificado para inputs, selects y textareas */
-input[type="text"], 
-textarea, 
-select,
-.file-input {
-    width: 100%;
-    padding: 12px;
+/* Estilo general de inputs */
+input[type="text"], textarea, select {
+    background: var(--input-bg);
     border: 1px solid var(--border);
+    color: white;
+    padding: 10px 12px;
     border-radius: var(--radius);
     font-family: inherit;
-    font-size: 0.95rem;
-    background: #f8fafc;
-    transition: all 0.2s;
+    font-size: 0.9rem;
     outline: none;
+    transition: border-color 0.2s;
 }
 
-input[type="text"]:focus, 
-textarea:focus, 
-select:focus {
+input[type="text"]:focus, textarea:focus, select:focus {
     border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: #2d323c;
 }
 
-textarea {
-    resize: vertical;
-    min-height: 80px;
+/* --- CORRECCIÓN INTEGRADA: INPUT DE ARCHIVO --- */
+input[type="file"] {
+    font-size: 0.75rem; /* Letra pequeña para evitar cortes */
+    color: var(--text-muted);
+    padding: 8px 0;
+    width: 100%;
+}
+
+/* Botón interno "Elegir archivo" */
+input[type="file"]::file-selector-button {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    transition: background 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: #475569;
 }
 
 /* Range Slider (Barra de tamaño) */
 .range-slider {
     width: 100%;
-    height: 6px;
+    height: 4px;
     background: var(--border);
-    border-radius: 5px;
+    border-radius: 2px;
     outline: none;
     appearance: none;
     -webkit-appearance: none;
+    margin-top: 5px;
 }
 .range-slider::-webkit-slider-thumb {
-    appearance: none;
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background: var(--primary);
     border-radius: 50%;
     cursor: pointer;
-    transition: transform 0.1s;
-}
-.range-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .control-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
 }
 #sizeValue {
-    font-size: 0.8rem;
-    font-weight: bold;
-    background: var(--border);
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-size: 0.75rem; font-weight: bold; color: var(--text-main);
 }
 
-/* =========================================
-   4. BOTONES DE TEMA (GRID)
-   ========================================= */
+/* 4. BOTONES Y TEMAS */
 .theme-buttons {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
 }
-
 .theme-btn {
     width: 100%;
-    aspect-ratio: 1; /* Cuadrados perfectos */
-    border-radius: 50%; /* Círculos */
+    aspect-ratio: 1;
+    border-radius: 6px;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: transform 0.1s;
 }
+.theme-btn:hover { transform: scale(1.1); border-color: white; }
 
-.theme-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* =========================================
-   5. CONTROLES DE FONDO
-   ========================================= */
+/* Controles de Fondo */
 .bg-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: #f8fafc;
-    padding: 10px;
+    gap: 8px;
+    background: var(--input-bg);
+    padding: 8px;
     border-radius: var(--radius);
     border: 1px solid var(--border);
 }
-
-.bg-input-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.mini-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-
-.color-picker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: none;
-    cursor: pointer;
-}
+.bg-input-wrapper { display: flex; align-items: center; }
+.color-picker { background: none; border: none; width: 30px; height: 30px; cursor: pointer; }
 
 .reset-btn {
-    background: none;
-    border: 1px solid var(--border);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
     cursor: pointer;
-    color: #ef4444; /* Rojo suave */
 }
-.reset-btn:hover {
-    background: #fee2e2;
-}
+.reset-btn:hover { background: #ef4444; color: white; }
 
-/* =========================================
-   6. BOTONES DE ACCIÓN (Descargar)
-   ========================================= */
+/* 5. BOTONES DE ACCIÓN */
 .btn-primary, .btn-secondary {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     border-radius: var(--radius);
     border: none;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
+    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    transition: transform 0.1s, filter 0.2s;
-    margin-top: 10px;
 }
 
-/* Botón PDF */
+/* PDF - Azul */
 .btn-primary {
-    background: var(--primary);
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
     color: white;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
-.btn-primary:hover {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-}
+.btn-primary:hover { filter: brightness(1.1); }
 
-/* Botón ZIP */
+/* ZIP - Gris */
 .btn-secondary {
-    background: var(--secondary);
-    color: white;
-    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);
-}
-.btn-secondary:hover {
     background: #334155;
-    transform: translateY(-2px);
+    color: white;
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
+.btn-secondary:hover { background: #475569; }
 
-/* =========================================
-   7. MONETIZACIÓN & PREMIUM
-   ========================================= */
+/* 6. MONETIZACIÓN & CORRECCIÓN CUADRO NEGRO */
 .monetization-area {
-    margin-top: auto; /* Empuja esto al fondo */
-    padding-top: 20px;
+    margin-top: auto;
     border-top: 1px solid var(--border);
+    padding-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
 .btn-coffee {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    background: #FFDD00;
-    color: #000;
-    font-weight: 600;
-    padding: 10px;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
+    background: #F59E0B; color: black; text-decoration: none;
+    padding: 10px; border-radius: var(--radius); text-align: center; font-weight: bold; font-size: 0.9rem;
 }
 
 .premium-link {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    text-decoration: underline;
-    cursor: pointer;
+    text-align: center; color: var(--text-muted); font-size: 0.75rem; text-decoration: underline; cursor: pointer;
 }
 
-.promo-code-area {
-    display: flex;
-    gap: 5px;
-}
-.promo-code-area input {
-    padding: 8px;
-    font-size: 0.8rem;
-}
+/* Área del Código Promocional */
+.promo-code-area { display: flex; gap: 5px; }
+.promo-code-area input { font-size: 0.8rem; padding: 8px; width: 70%; }
+
+/* --- CORRECCIÓN: Botón "Aplicar" ahora es AZUL, no negro --- */
 .promo-code-area button {
-    background: #000;
-    color: #fff;
+    background: var(--primary);
+    color: white;
     border: none;
-    padding: 0 10px;
-    border-radius: 8px;
+    width: 30%;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
 }
+.promo-code-area button:hover { background: var(--primary-hover); }
 
 .success-message {
-    color: #16a34a; /* Verde */
-    font-weight: bold;
-    text-align: center;
-    display: none;
+    color: #4ade80; font-weight: bold; text-align: center; font-size: 0.8rem; display: none;
 }
 
-/* =========================================
-   8. ESTILOS DE LA DIAPOSITIVA (VISUAL)
-   ========================================= */
+/* 7. ESTILOS DE SLIDE (VISUALIZACIÓN) */
 .carousel-slide {
-    width: 500px; /* Ancho base visualización */
-    /* La altura se controla por JS según formato */
+    width: 500px;
     background-color: white;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    
-    /* Configuración por defecto */
-    background-size: cover;
-    background-position: center;
 }
 
 .slide-content {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    position: relative;
-    text-align: center;
-    z-index: 10;
+    /* Centrado relativo, gestionado por Drag & Drop */
+    width: 100%;
+    height: 100%;
 }
 
 .slide-footer {
@@ -370,84 +307,56 @@ textarea {
     margin-top: auto;
     width: 100%;
     z-index: 20;
-    /* Corrección del footer */
     box-sizing: border-box; 
-    background: rgba(0,0,0,0.05); /* Sutil fondo oscuro para contraste */
+    background: rgba(0,0,0,0.05);
 }
 
-/* Textos dentro del slide */
 .slide-text-content {
-    white-space: pre-wrap;
-    line-height: 1.4;
-    font-weight: 600;
+    white-space: pre-wrap; line-height: 1.4; font-weight: 600;
 }
 
-/* Clases Draggable (Necesarias) */
-.draggable {
-    cursor: grab;
-    user-select: none;
-    position: relative; /* O absolute, controlado por JS */
-    z-index: 50;
-    touch-action: none;
-}
-.draggable:active {
-    cursor: grabbing;
-    opacity: 0.9;
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-}
+.draggable { cursor: grab; user-select: none; position: relative; z-index: 50; }
+.draggable:active { cursor: grabbing; }
 
-/* --- ESTILOS DE TEMAS (CSS Básico) --- */
-.theme-classic { background: white; color: #333; }
+/* 8. TEMAS */
+.theme-classic { background: var(--primary); color: white; }
 .theme-dark { background: #111; color: white; }
-.theme-dark .slide-footer { color: rgba(255,255,255,0.7); }
+.theme-sunset { background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%); color: #fff; }
+.theme-elegant { background: #fdfbf7; color: #4a4a4a; border: 10px solid #2c3e50; }
+.theme-cyberpunk { background: linear-gradient(to right, #24243e, #302b63); color: #00ffea; font-family: monospace; }
+.theme-luxury { background: #000; color: #d4af37; border: 2px solid #d4af37; }
+.theme-coffee { background-color: #4d3621; color: #e3dcd2; }
+.theme-mint { background-color: #e0f2f1; color: #004d40;}
 
-.theme-sunset { 
-    background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%); 
-    color: #fff; 
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.theme-elegant { 
-    background: #fdfbf7; 
-    color: #4a4a4a; 
-    border: 10px solid #2c3e50; /* Marco elegante */
-}
-
-.theme-cyberpunk {
-    background: #0f0c29;  
-    background: linear-gradient(to right, #24243e, #302b63, #0f0c29); 
-    color: #00ffea;
-    text-shadow: 0 0 5px #00ffea;
-    font-family: 'Courier New', Courier, monospace; /* Fuente retro */
-}
-
-.theme-luxury {
-    background: #000;
-    color: #d4af37; /* Dorado */
-    border: 2px solid #d4af37;
-}
-
-/* Estilo para iconos y candados */
-.lock-icon {
-    vertical-align: middle;
-    margin-left: 5px;
-    color: #f59e0b;
-}
-
-/* Responsivo para pantallas pequeñas */
+/* 9. RESPONSIVE */
 @media (max-width: 900px) {
-    .app-container {
-        flex-direction: column;
-        overflow-y: auto; /* Permitir scroll en móvil */
-    }
-    .controls {
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-    }
-    .preview-area {
-        padding: 20px;
-        min-height: 500px;
-    }
+    .app-container { flex-direction: column; overflow-y: auto; }
+    .controls { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* =========================================
+   CORRECCIÓN DE TAMAÑOS (IMPORTANTE)
+   ========================================= */
+
+/* Esto obliga a la caja a tener altura según el formato elegido */
+.format-square { 
+    aspect-ratio: 1 / 1;      /* Cuadrado Perfecto */
+}
+
+.format-portrait { 
+    aspect-ratio: 4 / 5;      /* Vertical (Instagram) */
+}
+
+.format-story { 
+    aspect-ratio: 9 / 16;     /* Historia (TikTok/Reels) */
+}
+
+.format-landscape { 
+    aspect-ratio: 16 / 9;     /* YouTube/LinkedIn */
+}
+
+/* Ajuste extra para que el contenido no se salga */
+.slide-content {
+    width: 100%;
+    height: 100%;
 }

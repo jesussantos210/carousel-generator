@@ -124,35 +124,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
-            // 4. GENERAR CAJAS DE TEXTO (Aquí está la magia del | )
-            const textParts = paragraph.split('|'); // Separamos por la barra vertical
+            // 4. GENERAR CAJAS DE TEXTO (CENTRADO PERFECTO)
+            const textParts = paragraph.split('|'); 
             let allTextHTML = "";
 
-            textParts.forEach((part, partIndex) => {
-                const cleanText = part.trim(); // Quitar espacios sobrantes
-                const partKey = `text-${partIndex}`; // Clave única: text-0, text-1...
+            // Calculamos un offset para que, si hay varios textos, queden centrados en grupo
+            const totalHeightOffset = (textParts.length - 1) * 60; 
+            const startY = -totalHeightOffset / 2; 
 
-                // Recuperar posición de ESTA parte específica
+            textParts.forEach((part, partIndex) => {
+                const cleanText = part.trim(); 
+                const partKey = `text-${partIndex}`;
+
+                // Recuperar posición guardada (Drag & Drop)
                 if (!slidesState[slideIndex][partKey]) slidesState[slideIndex][partKey] = {x:0, y:0};
                 const pos = slidesState[slideIndex][partKey];
 
-                // Crear HTML de esta caja
-                // Le damos un poco de margen top automático para que no salgan pegadas una encima de otra
-                const initialTop = partIndex * 60; // Separación vertical inicial
+                // Espaciado entre líneas si hay varios textos
+                const offsetTop = startY + (partIndex * 60);
 
                 allTextHTML += `
                     <div id="drag-text-${slideIndex}-${partIndex}" class="draggable" 
                          style="
+                            /* APLICAMOS LA POSICIÓN DEL ARRASTRE */
                             transform: translate(${pos.x}px, ${pos.y}px); 
+                            
+                            /* CENTRADO HORIZONTAL */
                             width: 100%; 
                             display: flex; 
                             justify-content: center; 
-                            position: absolute; 
-                            top: calc(40% + ${initialTop}px); /* Centrado inicial escalonado */
                             left: 0;
+
+                            /* CENTRADO VERTICAL MATEMÁTICO */
+                            position: absolute; 
+                            top: 50%; 
+                            margin-top: ${offsetTop}px; 
+                            
                             padding: 10px;
+                            /* Esto es vital para que el click no sea de 0px altura */
+                            min-height: 50px; 
                          ">
-                        <p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px; margin: 0; text-align: center;">
+                        
+                        <p class="${currentFont} slide-text-content" 
+                           style="
+                                font-size: ${currentFontSize}px; 
+                                margin: 0; 
+                                text-align: center; 
+                                transform: translateY(-50%); 
+                           ">
                             ${cleanText}
                         </p>
                     </div>
@@ -171,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // 6. INYECTAR HTML
-            // Nota: Quitamos el flex center del padre para que el position absolute funcione libremente
+           
             slide.innerHTML = `
                 <div class="slide-content" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
                     ${previewOverlay} 
