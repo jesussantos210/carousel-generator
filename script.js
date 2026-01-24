@@ -1,3 +1,24 @@
+/**
+ * ==============================================
+ * ⚡ SWIPESTUDIO - CAROUSEL GENERATOR ENGINE
+ * ==============================================
+ * @author     Jesús Santos
+ * @role       Software Engineer & Vibe Coder
+ * @year       2026
+ * @version    1.0.0 (BETA)
+ * @license    Copyright (c) 2026 Jesús Santos. All rights reserved.
+ * * "Building ideas with logic and flow." 🌊
+ * ==============================================
+ */
+
+// Firma Digital en Consola (Easter Egg para desarrolladores)
+console.log(
+    "%c ⚡ SwipeStudio %c Developed by Jesús Santos ",
+    "background: #3b82f6; color: white; padding: 5px; border-radius: 3px 0 0 3px; font-weight: bold;",
+    "background: #111; color: #fff; padding: 5px; border-radius: 0 3px 3px 0;"
+);
+console.log("%c 🌊 Vibe Coder Architecture", "color: #94a3b8; font-size: 11px; margin-top: 2px;");
+
 // --- SCRIPT.JS FINAL ---
 document.addEventListener('DOMContentLoaded', () => {
     // 1. REFERENCIAS
