@@ -19,7 +19,7 @@ console.log(
 );
 console.log("%c 🌊 Vibe Coder Architecture", "color: #94a3b8; font-size: 11px; margin-top: 2px;");
 
-// --- SCRIPT.JS FINAL ---
+// --- SCRIPT.JS ---
 document.addEventListener('DOMContentLoaded', () => {
     // 1. REFERENCIAS
     const textInput = document.getElementById('textInput');
