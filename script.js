@@ -125,11 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 textHTML += `<div id="drag-text-${slideIndex}-${idx}" class="draggable" style="transform: translate(${pos.x}px, ${pos.y}px); width: 100%; display: flex; justify-content: center; left: 0; position: absolute; top: 50%; margin-top: ${offTop}px; padding: 10px; min-height: 50px;"><p class="${currentFont} slide-text-content" style="font-size: ${currentFontSize}px; margin: 0; text-align: center; transform: translateY(-50%);">${part.trim()}</p></div>`;
             });
 
-            /*// Overlay (desativado temporalmente)
+            // Overlay (desativado temporalmente)
             let overlay = "";
             if (PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) {
                 overlay = `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; border-radius: 8px; pointer-events: none;"><span style="font-size: 60px;">🔒</span><span style="color: white; font-size: 24px; font-weight: bold;">PREMIUM</span></div>`;
-            }*/
+            }
 
             slide.innerHTML = `<div class="slide-content" style="position: relative; width: 100%; height: 100%; overflow: hidden;">${overlay} ${logoHTML} ${textHTML}</div><div class="slide-footer"><span class="${currentFont}" style="font-size: 0.8rem">${globalAuthor}</span><span class="watermark ${currentFont}" style="font-size: 0.6rem; opacity: 0.6; letter-spacing: 1px;">⚡ Creado con SwipeStudio</span><span class="${currentFont}" style="font-size: 0.8rem">${slideIndex + 1}/${contentToRender.length}</span></div>`;
             previewContainer.appendChild(slide);
