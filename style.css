@@ -165,7 +165,7 @@ input[type="file"]::file-selector-button {
 
 /* 7. SLIDES (VISUALIZACIÓN) */
 .carousel-slide {
-    width: 500px; background-color: white; position: relative; overflow: hidden;
+    width: 500px; background-color: #ffffff; position: relative; overflow: hidden;
     display: flex; flex-direction: column;
     box-shadow: 0 20px 40px -5px rgba(0,0,0,0.4); /* Sombra Individual */
     border: 1px solid rgba(255,255,255,0.05);
@@ -186,7 +186,7 @@ input[type="file"]::file-selector-button {
 .theme-classic { background: var(--primary); color: white; }
 button.theme-classic { border: 2px solid var(--primary); }
 
-.theme-dark { background-color: #0f172a; color: white; }
+.theme-dark { background-color: #1a1a1a; color: white; }
 button.theme-dark { border: 1px solid #475569; }
 
 .theme-sunset { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
@@ -200,7 +200,7 @@ button.theme-dark { border: 1px solid #475569; }
     color: #00ffea; text-shadow: 0 0 5px #00ffea; font-family: 'Courier New', monospace;
 }
 
-.theme-luxury { background-color: #000; color: #d4af37; border: 2px solid #d4af37; }
+.theme-luxury { background-color: #0b0c10; color: #d4af37; border: 2px solid #d4af37; }
 
 /* GOLD */
 .theme-gold {
@@ -217,7 +217,7 @@ button.theme-gold { border: 2px solid #FFD700; }
 
 /* MATRIX */
 .theme-matrix {
-    background-color: #000000; color: #00FF41; font-family: 'Courier New', monospace;
+    background-color: #0d0d0d; color: #00FF41; font-family: 'Courier New', monospace;
     border: 1px solid #00FF41; box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.2);
 }
 .theme-matrix .slide-text-content { text-shadow: 0 0 5px #00FF41; }

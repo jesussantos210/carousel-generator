@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoInput) logoInput.addEventListener('change', (e) => { if(!window.isPremium) return; const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { globalLogoUrl = ev.target.result; renderSlides(); }; r.readAsDataURL(f); } });
 
     // Descargas
+    //
     if(downloadBtn) downloadBtn.addEventListener('click', async () => {
         if(PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) { openModal(); return; }
         const t = downloadBtn.innerText; downloadBtn.innerText = "Generando...";
@@ -186,12 +187,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const {jsPDF} = window.jspdf; const doc = new jsPDF({orientation: w>h?'l':'p', unit:'px', format:[w,h]});
         const slides = document.querySelectorAll('.carousel-slide');
         for(let i=0; i<slides.length; i++) {
-            const cvs = await html2canvas(slides[i], {scale: w/slides[i].offsetWidth, useCORS:true, allowTaint:true, backgroundColor:null});
+            let slideBg = window.getComputedStyle(slides[i]).backgroundColor;
+            if (slideBg === 'rgba(0, 0, 0, 0)' || slideBg === 'transparent') { slideBg = '#000000'; }
+            const cvs = await html2canvas(slides[i], {scale: w/slides[i].offsetWidth, useCORS:true, allowTaint:true, backgroundColor:slideBg});
             if(i>0) doc.addPage([w,h]); doc.addImage(cvs.toDataURL('image/png'), 'PNG', 0, 0, w, h);
         }
         doc.save('swipe.pdf'); downloadBtn.innerText = t;
     });
 
+    // Descargar ZIP con imágenes individuales
     if(downloadZipBtn) downloadZipBtn.addEventListener('click', async () => {
         if(PREMIUM_THEMES.includes(currentTheme) && !window.isPremium) { openModal(); return; }
         const t = downloadZipBtn.innerText; downloadZipBtn.innerText = "Procesando...";
